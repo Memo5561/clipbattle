@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* RESET + BASE */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: black;
+  color: white;
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Globale Scrollbar aus */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Feed Scrollbar aus */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Video */
+video {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Selection */
+::selection {
+  background: #ec4899;
+  color: white;
+}
