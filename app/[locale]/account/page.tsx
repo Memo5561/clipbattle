@@ -1,120 +1,114 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {supabase} from "../../../lib/supabase";
-import ProtectedPage from "../../components/protected-page";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function AccountPage() {
   const [username, setUsername] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
       const {
-        data: {user}
+        data: { user }
       } = await supabase.auth.getUser();
 
       setUsername(user?.user_metadata?.username ?? null);
       setEmail(user?.email ?? null);
-      setLoading(false);
     };
 
     loadUser();
   }, []);
 
   const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(
-      "Willst du dein Konto wirklich dauerhaft löschen? Dieser Schritt kann nicht rückgängig gemacht werden."
+    const confirmDelete = confirm(
+      "Willst du dein Konto wirklich löschen? Das kann nicht rückgängig gemacht werden!"
     );
 
-    if (!confirmed) return;
+    if (!confirmDelete) return;
 
-    setDeleting(true);
+    setLoadingDelete(true);
 
     const {
-      data: {session}
+      data: { session }
     } = await supabase.auth.getSession();
 
-    if (!session?.access_token) {
+    if (!session) {
       alert("Nicht eingeloggt");
-      setDeleting(false);
+      setLoadingDelete(false);
       return;
     }
 
-    const response = await fetch(
-      "https://vdzsxmfrkdjcewwtgefv.supabase.co/functions/v1/delete-account",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`
+    try {
+      const res = await fetch(
+        "https://vdzsxmfrkdjcewwtgefv.supabase.co/functions/v1/delete-account",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          }
         }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert("Fehler: " + data.error);
+        setLoadingDelete(false);
+        return;
       }
-    );
 
-    const result = await response.json();
+      alert("Account erfolgreich gelöscht");
 
-    if (!response.ok) {
-      alert("Fehler beim Löschen: " + (result.error || "Unbekannt"));
-      setDeleting(false);
-      return;
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch (err) {
+      alert("Fehler beim Löschen");
+      setLoadingDelete(false);
     }
-
-    await supabase.auth.signOut();
-    window.location.href = "/";
   };
 
   return (
-    <ProtectedPage>
-      <div className="mx-auto max-w-2xl space-y-6 p-6 text-white">
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-6">
-          <p className="text-sm text-zinc-400">Account</p>
-          <h1 className="text-3xl font-bold">Kontoinformationen</h1>
+    <div className="min-h-screen bg-black px-4 py-10 text-white">
+      <div className="mx-auto max-w-md space-y-6">
+        
+        {/* Titel */}
+        <div className="rounded-2xl bg-zinc-900 p-5 shadow-xl">
+          <h1 className="text-xl font-bold">Kontoinformationen</h1>
         </div>
 
-        {loading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-6 text-zinc-400">
-            Lädt...
-          </div>
-        ) : (
-          <>
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-6">
-              <p className="text-sm text-zinc-400">Username</p>
-              <p className="mt-1 text-lg font-semibold text-white">
-                {username || "Nicht gesetzt"}
-              </p>
-            </div>
+        {/* Username */}
+        <div className="rounded-2xl bg-zinc-900 p-5">
+          <p className="text-sm text-zinc-400">Username</p>
+          <p className="text-lg font-semibold">{username ?? "—"}</p>
+        </div>
 
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-6">
-              <p className="text-sm text-zinc-400">E-Mail</p>
-              <p className="mt-1 break-all text-lg font-semibold text-white">
-                {email || "Nicht verfügbar"}
-              </p>
-            </div>
+        {/* Email */}
+        <div className="rounded-2xl bg-zinc-900 p-5">
+          <p className="text-sm text-zinc-400">E-Mail</p>
+          <p className="text-lg font-semibold">{email ?? "—"}</p>
+        </div>
 
-            <div className="rounded-3xl border border-red-500/30 bg-red-500/10 p-6">
-              <h2 className="text-xl font-bold text-red-400">
-                Konto löschen
-              </h2>
+        {/* Delete */}
+        <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-5">
+          <h2 className="mb-2 font-semibold text-red-400">
+            Konto löschen
+          </h2>
+          <p className="mb-4 text-sm text-red-300">
+            Dein Konto und alle Daten werden dauerhaft gelöscht.
+          </p>
 
-              <p className="mt-2 text-sm text-zinc-300">
-                Dein Konto und alle dazugehörigen Daten werden dauerhaft gelöscht.
-              </p>
-
-              <button
-                type="button"
-                onClick={handleDeleteAccount}
-                disabled={deleting}
-                className="mt-4 w-full rounded-2xl bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-500 disabled:opacity-60"
-              >
-                {deleting ? "Wird gelöscht..." : "Konto dauerhaft löschen"}
-              </button>
-            </div>
-          </>
-        )}
+          <button
+            onClick={handleDeleteAccount}
+            disabled={loadingDelete}
+            className="w-full rounded-xl bg-gradient-to-r from-red-500 to-orange-500 px-4 py-3 font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+          >
+            {loadingDelete ? "Wird gelöscht..." : "Konto löschen"}
+          </button>
+        </div>
       </div>
-    </ProtectedPage>
+    </div>
   );
 }
