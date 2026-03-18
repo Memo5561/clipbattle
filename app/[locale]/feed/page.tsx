@@ -50,26 +50,51 @@ export default function FeedPage() {
   useEffect(() => {
     if (!clips.length) return;
 
+    const playVisibleVideo = () => {
+      const viewportCenter = window.innerHeight / 2;
+
+      Object.values(videoRefs.current).forEach((video) => {
+        if (!video) return;
+
+        const rect = video.getBoundingClientRect();
+        const isCentered = rect.top <= viewportCenter && rect.bottom >= viewportCenter;
+
+        if (isCentered) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
 
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
             video.play().catch(() => {});
           } else {
             video.pause();
           }
         });
       },
-      {threshold: [0.25, 0.5, 0.7, 0.9]}
+      {threshold: [0.3, 0.6, 0.8]}
     );
 
     Object.values(videoRefs.current).forEach((video) => {
       if (video) observer.observe(video);
     });
 
-    return () => observer.disconnect();
+    playVisibleVideo();
+    window.addEventListener("scroll", playVisibleVideo, {passive: true});
+    window.addEventListener("resize", playVisibleVideo);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", playVisibleVideo);
+      window.removeEventListener("resize", playVisibleVideo);
+    };
   }, [clips]);
 
   const toggleMute = () => {
@@ -79,6 +104,9 @@ export default function FeedPage() {
     Object.values(videoRefs.current).forEach((video) => {
       if (video) {
         video.muted = newMuted;
+        if (!newMuted) {
+          video.play().catch(() => {});
+        }
       }
     });
   };
@@ -166,6 +194,7 @@ export default function FeedPage() {
                 loop
                 playsInline
                 autoPlay
+                preload="metadata"
                 onClick={() => handleDoubleTap(clip.id)}
                 className="absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover brightness-90"
               />
