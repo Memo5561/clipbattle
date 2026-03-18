@@ -152,6 +152,13 @@ export default function Navbar() {
     router.refresh();
   };
 
+  const handleGoToAccount = () => {
+    setMenuOpenDesktop(false);
+    setMenuOpenMobile(false);
+    router.push("/account");
+    router.refresh();
+  };
+
   return (
     <>
       {/* TOP NAV */}
@@ -194,6 +201,14 @@ export default function Navbar() {
                   <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl">
                     <button
                       type="button"
+                      onClick={handleGoToAccount}
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                    >
+                      Kontoinformationen
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={handleGoToMyClips}
                       className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
@@ -234,6 +249,14 @@ export default function Navbar() {
                     <div className="mb-1 rounded-xl px-4 py-2 text-sm text-zinc-400">
                       @{username}
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={handleGoToAccount}
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                    >
+                      Kontoinformationen
+                    </button>
 
                     <button
                       type="button"
