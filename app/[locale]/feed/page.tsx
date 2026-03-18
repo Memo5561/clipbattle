@@ -23,32 +23,31 @@ export default function FeedPage() {
   const [clips, setClips] = useState<Clip[]>([]);
   const [loading, setLoading] = useState(true);
   const [muted, setMuted] = useState(true);
-  const [likingId, setLikingId] = useState<string | null>(null);
-  const [showHeart, setShowHeart] = useState<string | null>(null);
   const [likedClipIds, setLikedClipIds] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [animatedLikeId, setAnimatedLikeId] = useState<string | null>(null);
+  const [showHeart, setShowHeart] = useState<string | null>(null);
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const lastTapRef = useRef<number>(0);
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // 🔥 Active Video
   const playActiveVideo = useCallback(() => {
-    const viewportCenter = window.innerHeight / 2;
+    const center = window.innerHeight / 2;
     let bestId: string | null = null;
     let bestDistance = Infinity;
 
     clips.forEach((clip) => {
-      const section = sectionRefs.current[clip.id];
-      if (!section) return;
+      const el = sectionRefs.current[clip.id];
+      if (!el) return;
 
-      const rect = section.getBoundingClientRect();
-      const center = rect.top + rect.height / 2;
-      const distance = Math.abs(center - viewportCenter);
+      const rect = el.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      const dist = Math.abs(mid - center);
 
-      if (distance < bestDistance) {
-        bestDistance = distance;
+      if (dist < bestDistance) {
+        bestDistance = dist;
         bestId = clip.id;
       }
     });
@@ -66,26 +65,19 @@ export default function FeedPage() {
     });
   }, [clips, muted]);
 
+  // 🔥 Load Data
   useEffect(() => {
     const load = async () => {
-      setLoading(true);
-
       const {
         data: {user}
       } = await supabase.auth.getUser();
 
       setUserId(user?.id ?? null);
 
-      const {data, error} = await supabase
+      const {data} = await supabase
         .from("clips")
         .select("*")
         .order("created_at", {ascending: false});
-
-      if (error) {
-        console.error(error.message);
-        setLoading(false);
-        return;
-      }
 
       setClips((data as Clip[]) || []);
 
@@ -104,40 +96,33 @@ export default function FeedPage() {
     load();
   }, []);
 
+  // 🔥 Scroll Handling
   useEffect(() => {
     if (!clips.length) return;
 
     const timeout = setTimeout(playActiveVideo, 200);
 
     const handleScroll = () => playActiveVideo();
-    const container = scrollContainerRef.current;
+    const container = scrollRef.current;
 
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-    }
+    container?.addEventListener("scroll", handleScroll);
 
     return () => {
       clearTimeout(timeout);
-      if (container) {
-        container.removeEventListener("scroll", handleScroll);
-      }
+      container?.removeEventListener("scroll", handleScroll);
     };
   }, [clips, playActiveVideo]);
 
+  // 🔊 Mute
   const toggleMute = () => {
     setMuted((prev) => !prev);
   };
 
-  const triggerLikeAnimation = (id: string) => {
-    setAnimatedLikeId(id);
-    setTimeout(() => setAnimatedLikeId(null), 300);
-  };
-
+  // ❤️ Like
   const handleLike = async (clip: Clip) => {
-    if (!userId || likingId) return;
+    if (!userId) return;
 
     const isLiked = likedClipIds.includes(clip.id);
-    setLikingId(clip.id);
 
     if (!isLiked) {
       await supabase.from("clip_likes").insert({
@@ -156,8 +141,6 @@ export default function FeedPage() {
       setClips((prev) =>
         prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
       );
-
-      triggerLikeAnimation(clip.id);
     } else {
       await supabase
         .from("clip_likes")
@@ -176,13 +159,10 @@ export default function FeedPage() {
       setClips((prev) =>
         prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
       );
-
-      triggerLikeAnimation(clip.id);
     }
-
-    setLikingId(null);
   };
 
+  // ❤️ Double Tap
   const handleDoubleTap = (clipId: string) => {
     const now = Date.now();
 
@@ -201,7 +181,7 @@ export default function FeedPage() {
     return (
       <ProtectedPage>
         <div className="flex h-screen items-center justify-center text-white">
-          {t("loading")}
+          Loading...
         </div>
       </ProtectedPage>
     );
@@ -211,7 +191,7 @@ export default function FeedPage() {
     <ProtectedPage>
       <div className="fixed inset-0 bg-black text-white">
         <div
-          ref={scrollContainerRef}
+          ref={scrollRef}
           className="h-screen snap-y snap-mandatory overflow-y-auto"
         >
           {clips.map((clip) => {
@@ -220,11 +200,15 @@ export default function FeedPage() {
             return (
               <section
                 key={clip.id}
-                ref={(el) => (sectionRefs.current[clip.id] = el)}
+                ref={(el) => {
+                  sectionRefs.current[clip.id] = el;
+                }}
                 className="relative h-screen snap-start"
               >
                 <video
-                  ref={(el) => (videoRefs.current[clip.id] = el)}
+                  ref={(el) => {
+                    videoRefs.current[clip.id] = el;
+                  }}
                   src={clip.video_url}
                   muted={muted}
                   loop
@@ -256,21 +240,22 @@ export default function FeedPage() {
                   <span>{clip.votes}</span>
                 </div>
 
-                {/* Info */}
+                {/* INFO + FRIEND BUTTON */}
                 <div className="absolute bottom-10 left-4 right-20 z-20">
                   <h2 className="text-2xl font-bold">{clip.title}</h2>
 
-                  {/* 🔥 USER + BUTTON */}
                   <div className="mt-2 flex items-center gap-3">
                     <p className="text-sm text-zinc-300">
                       {clip.username || "Unknown"}
                     </p>
 
-                    <FriendRequestButton targetUserId={clip.user_id} />
+                    {clip.user_id && (
+                      <FriendRequestButton targetUserId={clip.user_id} />
+                    )}
                   </div>
                 </div>
 
-                {/* Double Tap Heart */}
+                {/* DOUBLE TAP HEART */}
                 {showHeart === clip.id && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Heart className="h-24 w-24 text-white animate-ping" />
