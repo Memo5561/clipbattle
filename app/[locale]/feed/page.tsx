@@ -101,7 +101,7 @@ export default function FeedPage() {
   if (loading) {
     return (
       <ProtectedPage>
-        <div className="flex min-h-[60vh] items-center justify-center bg-black">
+        <div className="flex min-h-[100dvh] items-center justify-center bg-black text-white">
           <p className="text-zinc-400">{t("loading")}</p>
         </div>
       </ProtectedPage>
@@ -111,16 +111,16 @@ export default function FeedPage() {
   return (
     <ProtectedPage>
       {clips.length === 0 ? (
-        <div className="flex min-h-[60vh] items-center justify-center bg-black">
+        <div className="flex min-h-[100dvh] items-center justify-center bg-black text-white">
           <p className="text-zinc-400">{t("empty")}</p>
         </div>
       ) : (
-        <div className="fixed inset-0 overflow-hidden bg-black text-white">
-          <div className="h-full snap-y snap-mandatory overflow-y-auto bg-black">
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black text-white">
+          <div className="h-[100dvh] snap-y snap-mandatory overflow-y-auto">
             {clips.map((clip) => (
               <section
                 key={clip.id}
-                className="relative h-screen snap-start overflow-hidden bg-black"
+                className="relative h-[100dvh] snap-start overflow-hidden bg-black"
               >
                 <video
                   ref={(el) => {
@@ -136,7 +136,7 @@ export default function FeedPage() {
 
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
 
-                <div className="absolute right-4 top-24 z-20">
+                <div className="absolute right-4 top-6 z-20">
                   <button
                     type="button"
                     onClick={() => toggleMute(clip.id)}
@@ -150,7 +150,7 @@ export default function FeedPage() {
                   </button>
                 </div>
 
-                <div className="absolute bottom-28 left-0 right-0 z-20 p-4 sm:p-6">
+                <div className="absolute bottom-8 left-0 right-0 z-20 p-4 sm:p-6">
                   <div className="flex items-end justify-between gap-4">
                     <div className="max-w-[75%]">
                       <div className="mb-3 inline-block rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs text-zinc-200 backdrop-blur">
