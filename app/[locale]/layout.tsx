@@ -3,7 +3,7 @@ import {getMessages, setRequestLocale} from "next-intl/server";
 import {hasLocale} from "next-intl";
 import {notFound} from "next/navigation";
 import {routing} from "../../i18n/routing";
-import Navbar from "../components/navbar";
+import LayoutShell from "../components/layout-shell";
 
 type Props = {
   children: React.ReactNode;
@@ -23,10 +23,7 @@ export default async function LocaleLayout({children, params}: Props) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <Navbar />
-      <main className="mx-auto max-w-7xl px-4 py-6 pb-28 sm:px-6 sm:py-8 md:pb-8">
-        {children}
-      </main>
+      <LayoutShell>{children}</LayoutShell>
     </NextIntlClientProvider>
   );
 }
