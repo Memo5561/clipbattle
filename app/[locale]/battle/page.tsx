@@ -172,62 +172,56 @@ export default function BattlePage() {
             <p className="max-w-xl text-zinc-400">{t("notEnoughText")}</p>
           </section>
         ) : (
-          <div className="mx-auto max-w-7xl space-y-3">
-            <section className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900/80 px-4 py-3">
-              <div className="min-w-0">
-                <p className="text-[11px] text-zinc-500 sm:text-xs">{t("badge")}</p>
+          <div className="mx-auto max-w-5xl space-y-4">
+            <section className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 sm:px-5">
+              <div>
+                <p className="text-xs text-zinc-500">{t("badge")}</p>
                 <h1 className="text-xl font-bold sm:text-2xl">{t("title")}</h1>
               </div>
 
               <button
                 onClick={() => generateBattlePair(clips)}
                 disabled={voting}
-                className="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
               >
                 <RefreshCw size={16} />
                 {t("newRound")}
               </button>
             </section>
 
-            <section className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-950">
-              <div className="grid h-[calc(100dvh-250px)] min-h-[560px] grid-cols-2 sm:h-[calc(100dvh-220px)]">
-                <SplitSide
-                  clip={clipA}
-                  videoRef={videoRefA}
-                  muted={mutedA}
-                  onToggleMute={() => toggleMute(videoRefA, mutedA, setMutedA)}
-                  onVote={() => handleVote(clipA)}
-                  isWinner={winnerId === clipA.id}
-                  isLoser={!!winnerId && winnerId !== clipA.id}
-                  align="left"
-                  voting={voting}
-                  t={t}
-                />
+            <BattleCard
+              clip={clipA}
+              videoRef={videoRefA}
+              muted={mutedA}
+              onToggleMute={() => toggleMute(videoRefA, mutedA, setMutedA)}
+              onVote={() => handleVote(clipA)}
+              isWinner={winnerId === clipA.id}
+              isLoser={!!winnerId && winnerId !== clipA.id}
+              voting={voting}
+              color="from-purple-500 to-fuchsia-500"
+              t={t}
+            />
 
-                <SplitSide
-                  clip={clipB}
-                  videoRef={videoRefB}
-                  muted={mutedB}
-                  onToggleMute={() => toggleMute(videoRefB, mutedB, setMutedB)}
-                  onVote={() => handleVote(clipB)}
-                  isWinner={winnerId === clipB.id}
-                  isLoser={!!winnerId && winnerId !== clipB.id}
-                  align="right"
-                  voting={voting}
-                  t={t}
-                />
+            <div className="flex justify-center">
+              <div className="rounded-full border border-white/15 bg-black/70 px-5 py-3 text-sm font-bold tracking-[0.3em] text-white shadow-2xl backdrop-blur">
+                VS
               </div>
+            </div>
 
-              <div className="pointer-events-none absolute inset-y-0 left-1/2 z-20 w-px -translate-x-1/2 bg-white/15" />
+            <BattleCard
+              clip={clipB}
+              videoRef={videoRefB}
+              muted={mutedB}
+              onToggleMute={() => toggleMute(videoRefB, mutedB, setMutedB)}
+              onVote={() => handleVote(clipB)}
+              isWinner={winnerId === clipB.id}
+              isLoser={!!winnerId && winnerId !== clipB.id}
+              voting={voting}
+              color="from-blue-500 to-cyan-500"
+              t={t}
+            />
 
-              <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
-                <div className="rounded-full border border-white/15 bg-black/70 px-4 py-3 text-sm font-bold tracking-[0.35em] text-white shadow-2xl backdrop-blur">
-                  VS
-                </div>
-              </div>
-            </section>
-
-            <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-4">
+            <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between text-xs text-zinc-400 sm:text-sm">
                 <span>{clipA.username || t("unknownUser")}</span>
                 <span>{clipB.username || t("unknownUser")}</span>
@@ -256,7 +250,7 @@ export default function BattlePage() {
   );
 }
 
-type SplitSideProps = {
+type BattleCardProps = {
   clip: Clip;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   muted: boolean;
@@ -264,12 +258,12 @@ type SplitSideProps = {
   onVote: () => void;
   isWinner: boolean;
   isLoser: boolean;
-  align: "left" | "right";
   voting: boolean;
+  color: string;
   t: (key: string, values?: Record<string, string | number>) => string;
 };
 
-function SplitSide({
+function BattleCard({
   clip,
   videoRef,
   muted,
@@ -277,97 +271,83 @@ function SplitSide({
   onVote,
   isWinner,
   isLoser,
-  align,
   voting,
+  color,
   t
-}: SplitSideProps) {
+}: BattleCardProps) {
   const username = clip.username || t("unknownUser");
 
   return (
-    <button
-      type="button"
-      onClick={onVote}
-      disabled={voting}
-      className={`group relative h-full w-full overflow-hidden text-left transition duration-300 ${
-        isWinner ? "scale-[1.03] brightness-110" : ""
-      } ${isLoser ? "opacity-60" : "opacity-100"} disabled:cursor-default`}
+    <article
+      className={`overflow-hidden rounded-[2rem] border bg-zinc-950 shadow-2xl transition-all duration-300 ${
+        isWinner
+          ? "border-emerald-400/40 ring-2 ring-emerald-400/20"
+          : "border-zinc-800"
+      } ${isLoser ? "opacity-60" : "opacity-100"}`}
     >
-      <video
-        ref={videoRef}
-        src={clip.video_url}
-        autoPlay
-        loop
-        muted={muted}
-        playsInline
-        className={`absolute inset-0 h-full w-full object-cover ${
-          align === "left" ? "object-[35%_center]" : "object-[65%_center]"
-        } scale-[1.45] sm:scale-[1.25]`}
-      />
+      <div className="relative">
+        <video
+          ref={videoRef}
+          src={clip.video_url}
+          autoPlay
+          loop
+          muted={muted}
+          playsInline
+          className="aspect-video w-full object-cover bg-black"
+        />
 
-      <div
-        className={`absolute inset-0 ${
-          align === "left"
-            ? "bg-gradient-to-b from-purple-700/25 via-black/10 to-black/45"
-            : "bg-gradient-to-b from-blue-700/25 via-black/10 to-black/45"
-        }`}
-      />
+        <div className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${color} opacity-25`} />
 
-      <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/0" />
+        <button
+          type="button"
+          onClick={onToggleMute}
+          className="absolute left-3 top-3 z-20 rounded-full bg-black/65 p-2 text-white backdrop-blur transition hover:bg-black/85"
+        >
+          {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        </button>
 
-      {isWinner && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[1px]">
-          <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-4 py-3 text-sm font-semibold text-emerald-200 shadow-2xl">
-            <span className="inline-flex items-center gap-2">
-              <Trophy size={18} />
-              {t("winner")}
-            </span>
+        {isWinner && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[1px]">
+            <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-2xl sm:text-base">
+              <span className="inline-flex items-center gap-2">
+                <Trophy size={18} />
+                {t("winner")}
+              </span>
+            </div>
           </div>
-        </div>
-      )}
-
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleMute();
-        }}
-        className={`absolute top-3 z-30 rounded-full bg-black/65 p-2 text-white backdrop-blur transition hover:bg-black/85 ${
-          align === "left" ? "left-3" : "right-3"
-        }`}
-      >
-        {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-      </button>
-
-      <div
-        className={`absolute top-3 z-20 ${
-          align === "left" ? "right-3 text-right" : "left-3 text-left"
-        }`}
-      >
-        <div className="rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-[11px] font-medium text-white/90 backdrop-blur sm:text-xs">
-          {clip.username ? t("voteFor", {username}) : t("voteForClip")}
-        </div>
+        )}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 p-3">
-        <div className="rounded-2xl border border-white/10 bg-black/50 p-3 shadow-xl backdrop-blur-lg">
-          <h2 className="line-clamp-2 text-lg font-bold text-white">
-            {clip.title}
-          </h2>
+      <div className="space-y-4 p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="line-clamp-2 text-2xl font-bold text-white">
+              {clip.title}
+            </h2>
+            <p className="mt-1 text-sm text-zinc-400">{clip.game}</p>
+          </div>
 
-          <p className="mt-1 line-clamp-1 text-sm text-zinc-300">
-            {clip.game}
+          <div className={`rounded-full bg-gradient-to-r px-3 py-1 text-xs font-semibold text-white ${color}`}>
+            {clip.votes || 0} {t("votes")}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-black/35 p-4 backdrop-blur-lg">
+          <p className="text-sm text-zinc-300">
+            {t("postedBy")}:{" "}
+            <span className="font-semibold text-white">{username}</span>
           </p>
-
-          <div className="mt-2 flex flex-col gap-1 text-xs text-zinc-300">
-            <span>
-              {t("postedBy")}: {username}
-            </span>
-            <span>
-              {clip.votes || 0} {t("votes")}
-            </span>
-          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={onVote}
+          disabled={voting}
+          className={`w-full rounded-2xl bg-gradient-to-r px-6 py-4 text-base font-semibold text-white shadow-lg transition hover:scale-[1.01] disabled:opacity-60 ${color}`}
+        >
+          {clip.username ? t("voteFor", {username}) : t("voteForClip")}
+        </button>
       </div>
-    </button>
+    </article>
   );
 }
