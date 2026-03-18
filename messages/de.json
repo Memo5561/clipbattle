@@ -1,16 +1,19 @@
 {
   "Home": {
-    "title": "Willkommen bei ClipBattle",
-    "subtitle": "Lade deine besten Gaming Clips hoch und tritt im Battle gegen andere an.",
-    "battle": "⚔️ Battle starten",
-    "upload": "⬆️ Clip hochladen",
-    "feature1Title": "🎥 Clips hochladen",
-    "feature1Text": "Teile deine besten Gaming Momente mit der Community.",
-    "feature2Title": "⚔️ Battle",
-    "feature2Text": "Zwei Clips treten gegeneinander an — die Community entscheidet.",
-    "feature3Title": "🏆 Leaderboard",
-    "feature3Text": "Die besten Clips steigen nach oben und werden sichtbar."
-  },
+  "eyebrow": "Gaming Clips • Battles • Rankings",
+  "titleA": "Willkommen bei",
+  "titleB": "ClipBattle",
+  "subtitle": "Lade deine besten Gaming Clips hoch und tritt im Battle gegen andere an.",
+  "battle": "Battle starten",
+  "upload": "Clip hochladen",
+  "feature1Title": "Clips hochladen",
+  "feature1Text": "Teile deine besten Gaming Momente mit der Community.",
+  "feature2Title": "Battle",
+  "feature2Text": "Zwei Clips treten gegeneinander an — die Community entscheidet.",
+  "feature3Title": "Leaderboard",
+  "feature3Text": "Die besten Clips steigen nach oben und werden sichtbar.",
+  "previewTitle": "Battle Vorschau"
+},
   "Navbar": {
     "home": "Home",
     "upload": "Upload",
