@@ -67,27 +67,24 @@ export default function BattlePage() {
   };
 
   if (loading || !clipA || !clipB) {
-    return <div className="text-center text-zinc-400 mt-20">Loading...</div>;
+    return <div className="mt-20 text-center text-zinc-400">Loading...</div>;
   }
 
   return (
     <ProtectedPage>
-      <div className="text-white mx-auto max-w-5xl space-y-2">
-
-        {/* HEADER */}
-        <div className="flex justify-between items-center p-4 rounded-3xl bg-zinc-900 border border-zinc-800">
+      <div className="mx-auto max-w-5xl space-y-2 text-white">
+        <div className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900 p-4">
           <h1 className="text-xl font-bold">Battle</h1>
 
           <button
             onClick={() => generatePair(clips)}
-            className="flex items-center gap-2 bg-zinc-800 px-4 py-2 rounded-xl"
+            className="flex items-center gap-2 rounded-xl bg-zinc-800 px-4 py-2"
           >
             <RefreshCw size={16} />
             Neue Runde
           </button>
         </div>
 
-        {/* CLIP A */}
         <SwipeCard
           clip={clipA}
           videoRef={videoRefA}
@@ -99,7 +96,6 @@ export default function BattlePage() {
 
         <div className="text-center text-xs text-zinc-600">VS</div>
 
-        {/* CLIP B */}
         <SwipeCard
           clip={clipB}
           videoRef={videoRefB}
@@ -120,32 +116,71 @@ function SwipeCard({
   toggleMute,
   onVote,
   isWinner
-}: any) {
+}: {
+  clip: Clip;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+  muted: boolean;
+  toggleMute: () => void;
+  onVote: () => void;
+  isWinner: boolean;
+}) {
   const [dragX, setDragX] = useState(0);
+  const [dragY, setDragY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
   const startX = useRef<number | null>(null);
+  const startY = useRef<number | null>(null);
 
   const threshold = 100;
   const progress = Math.min(dragX / threshold, 1);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    startY.current = e.touches[0].clientY;
+    setDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (startX.current === null || startY.current === null) return;
+
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+
+    const diffX = currentX - startX.current;
+    const diffY = currentY - startY.current;
+
+    setDragX(diffX > 0 ? diffX : 0);
+    setDragY(diffX > 0 ? diffY : 0);
+  };
+
+  const handleTouchEnd = () => {
+    if (dragX > threshold) {
+      onVote();
+    }
+
+    setDragX(0);
+    setDragY(0);
+    setDragging(false);
+    startX.current = null;
+    startY.current = null;
+  };
+
+  const rotate = Math.min(dragX * 0.06, 14);
+  const lift = Math.min(dragX * 0.08, 24);
+
   return (
     <div
       className="relative overflow-hidden rounded-3xl border border-zinc-800 shadow-2xl"
-      onTouchStart={(e) => (startX.current = e.touches[0].clientX)}
-      onTouchMove={(e) => {
-        if (!startX.current) return;
-        const diff = e.touches[0].clientX - startX.current;
-        setDragX(diff > 0 ? diff : 0);
-      }}
-      onTouchEnd={() => {
-        if (dragX > threshold) onVote();
-        setDragX(0);
-        startX.current = null;
-      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{
-        transform: `translateX(${dragX}px)`
+        transform: `translateX(${dragX}px) translateY(${dragY * 0.08 - lift}px) rotate(${rotate}deg)`,
+        transition: dragging
+          ? "none"
+          : "transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)"
       }}
     >
-      {/* VIDEO */}
       <video
         ref={videoRef}
         src={clip.video_url}
@@ -156,34 +191,30 @@ function SwipeCard({
         className="h-[70vh] w-full object-cover"
       />
 
-      {/* SMOOTH GREEN SWIPE */}
       <div
         className="absolute inset-y-0 left-0 bg-emerald-500/30"
         style={{
           width: "100%",
           transform: `scaleX(${progress})`,
-          transformOrigin: "left"
+          transformOrigin: "left",
+          transition: dragging ? "none" : "transform 0.15s ease-out"
         }}
       />
 
-      {/* DARK OVERLAY */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
 
-      {/* TEXT */}
       <div className="absolute bottom-5 left-5">
         <h2 className="text-2xl font-bold">{clip.title}</h2>
         <p className="text-sm text-zinc-400">{clip.username}</p>
       </div>
 
-      {/* MUTE */}
       <button
         onClick={toggleMute}
-        className="absolute top-4 left-4 bg-black/60 p-2 rounded-full"
+        className="absolute left-4 top-4 rounded-full bg-black/60 p-2"
       >
         {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
       </button>
 
-      {/* WINNER */}
       {isWinner && (
         <div className="absolute inset-0 flex items-center justify-center bg-emerald-500/20">
           <Trophy size={40} />
