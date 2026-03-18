@@ -22,8 +22,10 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [muted, setMuted] = useState(true);
   const [likingId, setLikingId] = useState<string | null>(null);
+  const [showHeart, setShowHeart] = useState<string | null>(null);
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const lastTapRef = useRef<number>(0);
 
   useEffect(() => {
     const load = async () => {
@@ -110,6 +112,22 @@ export default function FeedPage() {
     setLikingId(null);
   };
 
+  const handleDoubleTap = (clipId: string) => {
+    const now = Date.now();
+    const doubleTapDelay = 300;
+
+    if (now - lastTapRef.current < doubleTapDelay) {
+      handleLike(clipId);
+      setShowHeart(clipId);
+
+      setTimeout(() => {
+        setShowHeart(null);
+      }, 700);
+    }
+
+    lastTapRef.current = now;
+  };
+
   if (loading) {
     return (
       <ProtectedPage>
@@ -148,8 +166,15 @@ export default function FeedPage() {
                 loop
                 playsInline
                 autoPlay
+                onClick={() => handleDoubleTap(clip.id)}
                 className="absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover brightness-90"
               />
+
+              {showHeart === clip.id && (
+                <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+                  <Heart className="h-24 w-24 animate-[scaleHeart_0.7s_ease-out] fill-white text-white" />
+                </div>
+              )}
 
               <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/85" />
 
