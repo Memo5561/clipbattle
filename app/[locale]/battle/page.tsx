@@ -161,7 +161,7 @@ export default function BattlePage() {
 
   return (
     <ProtectedPage>
-      <div className="min-h-[calc(100vh-7rem)] text-white">
+      <div className="text-white">
         {loading ? (
           <section className="mx-auto flex min-h-[60vh] max-w-4xl items-center justify-center rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 text-center">
             <p className="text-zinc-400">{t("loading")}</p>
@@ -173,7 +173,6 @@ export default function BattlePage() {
           </section>
         ) : (
           <div className="mx-auto max-w-7xl space-y-4">
-            {/* Top bar */}
             <section className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 sm:px-5">
               <div>
                 <p className="text-xs text-zinc-500">{t("badge")}</p>
@@ -190,9 +189,8 @@ export default function BattlePage() {
               </button>
             </section>
 
-            {/* Split screen */}
             <section className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-950">
-              <div className="grid min-h-[72vh] grid-cols-2 sm:min-h-[78vh]">
+              <div className="grid h-[calc(100vh-120px)] grid-cols-2 sm:h-[80vh]">
                 <SplitSide
                   clip={clipA}
                   videoRef={videoRefA}
@@ -202,7 +200,7 @@ export default function BattlePage() {
                   isWinner={winnerId === clipA.id}
                   isLoser={!!winnerId && winnerId !== clipA.id}
                   align="left"
-                  accent="from-purple-500/35 to-blue-500/10"
+                  accent="from-purple-500/20 via-purple-900/10 to-transparent"
                   voting={voting}
                   t={t}
                 />
@@ -216,16 +214,14 @@ export default function BattlePage() {
                   isWinner={winnerId === clipB.id}
                   isLoser={!!winnerId && winnerId !== clipB.id}
                   align="right"
-                  accent="from-blue-500/35 to-cyan-500/10"
+                  accent="from-blue-500/20 via-blue-900/10 to-transparent"
                   voting={voting}
                   t={t}
                 />
               </div>
 
-              {/* Middle divider */}
               <div className="pointer-events-none absolute inset-y-0 left-1/2 z-20 w-px -translate-x-1/2 bg-white/15" />
 
-              {/* VS badge */}
               <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
                 <div className="rounded-full border border-white/20 bg-black/70 px-4 py-3 text-sm font-bold tracking-[0.3em] text-white shadow-2xl backdrop-blur">
                   VS
@@ -233,7 +229,6 @@ export default function BattlePage() {
               </div>
             </section>
 
-            {/* Bottom info */}
             <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between text-xs text-zinc-400 sm:text-sm">
                 <span>{clipA.username || t("unknownUser")}</span>
@@ -302,7 +297,7 @@ function SplitSide({
       onClick={onVote}
       disabled={voting}
       className={`group relative h-full w-full overflow-hidden text-left transition duration-300 ${
-        isWinner ? "scale-[1.01]" : ""
+        isWinner ? "scale-[1.05] brightness-110" : ""
       } ${isLoser ? "opacity-60" : "opacity-100"} disabled:cursor-default`}
     >
       <video
@@ -316,9 +311,8 @@ function SplitSide({
       />
 
       <div className={`absolute inset-0 bg-gradient-to-b ${accent}`} />
-      <div className="absolute inset-0 bg-black/25 transition group-hover:bg-black/15" />
+      <div className="absolute inset-0 bg-black/20 transition group-hover:bg-black/10" />
 
-      {/* Winner overlay */}
       {isWinner && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[2px]">
           <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-2xl sm:text-base">
@@ -330,7 +324,6 @@ function SplitSide({
         </div>
       )}
 
-      {/* Mute */}
       <button
         type="button"
         onClick={(e) => {
@@ -344,7 +337,6 @@ function SplitSide({
         {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
       </button>
 
-      {/* Tap hint */}
       <div
         className={`absolute top-3 z-20 ${
           align === "left" ? "right-3 text-right" : "left-3 text-left"
@@ -355,9 +347,8 @@ function SplitSide({
         </div>
       </div>
 
-      {/* Bottom info */}
       <div className="absolute inset-x-0 bottom-0 z-20 p-3 sm:p-4">
-        <div className="rounded-2xl border border-white/10 bg-black/45 p-3 backdrop-blur-md">
+        <div className="rounded-2xl border border-white/10 bg-black/50 p-3 shadow-xl backdrop-blur-lg">
           <h2 className="line-clamp-2 text-sm font-bold text-white sm:text-lg">
             {clip.title}
           </h2>
