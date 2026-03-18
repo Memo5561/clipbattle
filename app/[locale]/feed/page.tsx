@@ -234,7 +234,7 @@ export default function FeedPage() {
                 playsInline
                 preload="auto"
                 onClick={() => handleDoubleTap(clip.id)}
-                className="absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover brightness-90"
+                className="absolute left-1/2 top-1/2 h-[105%] w-[105%] -translate-x-1/2 -translate-y-1/2 object-cover brightness-90"
               />
 
               {showHeart === clip.id && (
