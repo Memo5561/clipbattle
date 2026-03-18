@@ -1,17 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* -------------------- */
-/* RESET & BASE */
-/* -------------------- */
-
+/* RESET */
 html,
 body {
-  padding: 0;
   margin: 0;
-  background: black;
-  color: white;
+  padding: 0;
+  background: #000;
+  color: #fff;
   overflow-x: hidden;
 }
 
@@ -19,71 +14,45 @@ body {
   box-sizing: border-box;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* -------------------- */
-/* SCROLLBAR (optional clean) */
-/* -------------------- */
-
-::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+body {
+  overscroll-behavior-y: none;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* -------------------- */
-/* VIDEO FIXES */
-/* -------------------- */
+/* Scrollbar ausblenden */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
 
+/* Videos */
 video {
   object-fit: cover;
   max-width: none;
 }
 
-/* verhindert weird zoom / scroll bugs auf mobile */
-body {
-  overscroll-behavior-y: none;
-}
-
-/* -------------------- */
-/* SNAP FEED SMOOTHER */
-/* -------------------- */
-
-.snap-y {
-  scroll-snap-type: y mandatory;
-}
-
-.snap-start {
-  scroll-snap-align: start;
-}
-
-/* -------------------- */
-/* BUTTON FEEL */
-/* -------------------- */
-
+/* App feel */
 button {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* -------------------- */
-/* TEXT GRADIENT OVERLAY SUPPORT */
-/* -------------------- */
-
-.gradient-bottom {
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.85),
-    rgba(0, 0, 0, 0.4),
-    transparent
-  );
+.no-select {
+  user-select: none;
 }
 
-/* -------------------- */
-/* HEART ANIMATION ❤️ */
-/* -------------------- */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Animationen */
 @keyframes scaleHeart {
   0% {
     transform: scale(0.5);
@@ -103,14 +72,9 @@ button {
   }
 }
 
-/* optional class falls du sie brauchst */
 .heart-animation {
   animation: scaleHeart 0.7s ease-out;
 }
-
-/* -------------------- */
-/* LIKE BUTTON PULSE */
-/* -------------------- */
 
 @keyframes likePulse {
   0% {
@@ -128,10 +92,6 @@ button {
   animation: likePulse 0.3s ease;
 }
 
-/* -------------------- */
-/* FADE IN */
-/* -------------------- */
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -143,24 +103,4 @@ button {
 
 .fade-in {
   animation: fadeIn 0.4s ease;
-}
-
-/* -------------------- */
-/* PREVENT TEXT SELECT (APP FEEL) */
-/* -------------------- */
-
-.no-select {
-  user-select: none;
-}
-
-/* -------------------- */
-/* MOBILE SAFE AREAS */
-/* -------------------- */
-
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.safe-top {
-  padding-top: env(safe-area-inset-top);
 }
