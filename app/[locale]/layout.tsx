@@ -1,44 +1,32 @@
+import "../globals.css";
 import {NextIntlClientProvider} from "next-intl";
-import {getMessages, setRequestLocale} from "next-intl/server";
-import {notFound} from "next/navigation";
-import {hasLocale} from "next-intl";
-import {createClient} from "@supabase/supabase-js";
-import {routing} from "../../i18n/routing";
+import {getMessages} from "next-intl/server";
 import Navbar from "../components/navbar";
-import AuthGuard from "../components/auth-guard";
 
-type Props = {
+export default async function LocaleLayout({
+  children,
+  params
+}: {
   children: React.ReactNode;
-  params: Promise<{locale: string}>;
-};
-
-export default async function LocaleLayout({children, params}: Props) {
-  const {locale} = await params;
-
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
-
-  setRequestLocale(locale);
+  params: {locale: string};
+}) {
   const messages = await getMessages();
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  const {
-    data: {user}
-  } = await supabase.auth.getUser();
-
-  const publicPaths = ["/", "/auth"];
-  const pathname =
-    typeof children === "object" && children !== null ? "" : "";
-
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <Navbar />
-      <main className="mx-auto max-w-7xl px-6 py-8">{children}</main>
-    </NextIntlClientProvider>
+    <html lang={params.locale}>
+      <body className="bg-black text-white">
+        <NextIntlClientProvider messages={messages}>
+          
+          {/* NAVBAR */}
+          <Navbar />
+
+          {/* MAIN CONTENT */}
+          <main className="mx-auto max-w-7xl px-4 py-6 pb-28 sm:px-6 sm:py-8 md:pb-8">
+            {children}
+          </main>
+
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }
