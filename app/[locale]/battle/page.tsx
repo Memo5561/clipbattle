@@ -293,7 +293,7 @@ function NextLevelSwipeCard({
   const [voteBurst, setVoteBurst] = useState(false);
   const startXRef = useRef<number | null>(null);
 
-  const threshold = 120;
+  const threshold = 100;
   const progress = Math.min(dragX / threshold, 1);
   const reached = dragX >= threshold;
 
@@ -362,16 +362,21 @@ function NextLevelSwipeCard({
             className="aspect-video w-full object-cover bg-black"
           />
 
-          {/* CLEAN OVERLAY */}
           <div className="pointer-events-none absolute inset-0 z-10">
             <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
           </div>
 
-          {/* SWIPE PROGRESS */}
           <div
-            className="pointer-events-none absolute inset-y-0 left-0 z-10 bg-emerald-500/25 backdrop-blur-[1px] transition-all duration-75"
-            style={{width: `${progress * 100}%`}}
+            className="pointer-events-none absolute inset-y-0 left-0 z-10 bg-emerald-500/30 will-change-transform"
+            style={{
+              width: "100%",
+              transform: `scaleX(${progress})`,
+              transformOrigin: "left",
+              transition: dragging
+                ? "none"
+                : "transform 0.15s cubic-bezier(0.22, 1, 0.36, 1)"
+            }}
           />
 
           <div
@@ -383,7 +388,6 @@ function NextLevelSwipeCard({
             }}
           />
 
-          {/* SWIPE BADGE */}
           <div className="pointer-events-none absolute left-4 top-1/2 z-20 -translate-y-1/2">
             <div
               className="flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 shadow-xl transition-all duration-150"
@@ -397,7 +401,6 @@ function NextLevelSwipeCard({
             </div>
           </div>
 
-          {/* SWIPE HINT */}
           <div className="pointer-events-none absolute bottom-4 right-4 z-20">
             <div
               className="rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-xs font-medium text-white/85 backdrop-blur transition-all duration-150"
@@ -410,7 +413,6 @@ function NextLevelSwipeCard({
             </div>
           </div>
 
-          {/* MUTE */}
           <button
             type="button"
             onClick={onToggleMute}
@@ -419,7 +421,6 @@ function NextLevelSwipeCard({
             {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
 
-          {/* VOTE BURST */}
           {voteBurst && (
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
               <div className="rounded-full border border-emerald-300/30 bg-emerald-500/25 px-6 py-4 text-lg font-bold text-emerald-100 shadow-2xl backdrop-blur-md animate-pulse">
@@ -431,7 +432,6 @@ function NextLevelSwipeCard({
             </div>
           )}
 
-          {/* WINNER OVERLAY */}
           {isWinner && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[1px]">
               <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-2xl sm:text-base">
