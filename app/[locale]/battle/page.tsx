@@ -155,6 +155,9 @@ function SwipeCard({
 
   const handleTouchEnd = () => {
     if (dragX > threshold) {
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate(40);
+      }
       onVote();
     }
 
