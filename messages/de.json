@@ -77,7 +77,10 @@
     "voteForClip": "Vote für diesen Clip",
     "battleRunning": "Battle läuft...",
     "clickVideo": "Klick aufs Video = Pause / Play",
-    "unknownUser": "Unbekannt"
+    "unknownUser": "Unbekannt",
+    "swipeToVote": "Zum Voten nach rechts swipen",
+    "swipeHint": "Swipe auf einer Karte nach rechts, um für diesen Clip zu voten.",
+    "voteBadge": "VOTE"
   },
   "Upload": {
     "badge": "🎥 Upload deinen Clip",
