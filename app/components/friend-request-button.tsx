@@ -8,16 +8,18 @@ type Props = {
   targetUserId: string;
 };
 
-type State = "idle" | "pending" | "friends";
+type RequestState = "idle" | "pending" | "friends";
 
 export default function FriendRequestButton({targetUserId}: Props) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [state, setState] = useState<State>("idle");
+  const [state, setState] = useState<RequestState>("idle");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true);
+
       const {
         data: {user}
       } = await supabase.auth.getUser();
@@ -34,7 +36,7 @@ export default function FriendRequestButton({targetUserId}: Props) {
         return;
       }
 
-      const {data} = await supabase
+      const {data, error} = await supabase
         .from("friend_requests")
         .select("status, sender_id, receiver_id")
         .or(
@@ -42,10 +44,10 @@ export default function FriendRequestButton({targetUserId}: Props) {
         )
         .maybeSingle();
 
-      if (data) {
+      if (!error && data) {
         if (data.status === "accepted") {
           setState("friends");
-        } else {
+        } else if (data.status === "pending") {
           setState("pending");
         }
       }
@@ -56,18 +58,19 @@ export default function FriendRequestButton({targetUserId}: Props) {
     load();
   }, [targetUserId]);
 
-  const sendRequest = async () => {
-    if (!currentUserId || sending) return;
+  const handleSendRequest = async () => {
+    if (!currentUserId || currentUserId === targetUserId || sending) return;
 
     setSending(true);
 
     const {error} = await supabase.from("friend_requests").insert({
       sender_id: currentUserId,
-      receiver_id: targetUserId
+      receiver_id: targetUserId,
+      status: "pending"
     });
 
     if (error) {
-      alert(error.message);
+      alert("Fehler beim Senden: " + error.message);
       setSending(false);
       return;
     }
@@ -82,15 +85,23 @@ export default function FriendRequestButton({targetUserId}: Props) {
 
   if (state === "friends") {
     return (
-      <button className="rounded-xl bg-emerald-500/20 px-4 py-2 text-sm text-emerald-300">
-        <Check size={16} /> Freunde
+      <button
+        disabled
+        className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2 text-sm font-medium text-emerald-300"
+      >
+        <Check size={16} />
+        Freunde
       </button>
     );
   }
 
   if (state === "pending") {
     return (
-      <button className="rounded-xl bg-yellow-500/20 px-4 py-2 text-sm text-yellow-300">
+      <button
+        disabled
+        className="inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/15 px-4 py-2 text-sm font-medium text-yellow-300"
+      >
+        <Check size={16} />
         Anfrage gesendet
       </button>
     );
@@ -98,11 +109,15 @@ export default function FriendRequestButton({targetUserId}: Props) {
 
   return (
     <button
-      onClick={sendRequest}
+      onClick={handleSendRequest}
       disabled={sending}
-      className="flex items-center gap-2 rounded-xl bg-blue-500 px-4 py-2 text-sm text-white"
+      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.02] disabled:opacity-60"
     >
-      {sending ? <Loader2 size={16} /> : <UserPlus size={16} />}
+      {sending ? (
+        <Loader2 size={16} className="animate-spin" />
+      ) : (
+        <UserPlus size={16} />
+      )}
       Freund hinzufügen
     </button>
   );
