@@ -4,6 +4,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
+import FriendRequestButton from "../../components/friend-request-button";
 import {Heart, Volume2, VolumeX} from "lucide-react";
 
 type Clip = {
@@ -13,6 +14,7 @@ type Clip = {
   video_url: string;
   votes: number;
   username: string | null;
+  user_id: string;
 };
 
 export default function FeedPage() {
@@ -393,6 +395,12 @@ export default function FeedPage() {
                       {clip.username || t("unknownUser")}
                     </span>
                   </p>
+
+                  {clip.user_id && (
+                    <div className="mt-3">
+                      <FriendRequestButton targetUserId={clip.user_id} />
+                    </div>
+                  )}
                 </div>
               </section>
             );
