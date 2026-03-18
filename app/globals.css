@@ -1,51 +1,166 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* RESET + BASE */
+/* -------------------- */
+/* RESET & BASE */
+/* -------------------- */
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: black;
+  color: white;
+  overflow-x: hidden;
+}
+
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
-  background-color: black;
-  color: white;
-  min-height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-/* Globale Scrollbar aus */
+/* Smooth scrolling */
 html {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   scroll-behavior: smooth;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
+/* -------------------- */
+/* SCROLLBAR (optional clean) */
+/* -------------------- */
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
 }
 
-/* Feed Scrollbar aus */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+/* -------------------- */
+/* VIDEO FIXES */
+/* -------------------- */
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Video */
 video {
-  max-width: 100%;
-  height: auto;
   object-fit: cover;
+  max-width: none;
 }
 
-/* Selection */
-::selection {
-  background: #ec4899;
-  color: white;
+/* verhindert weird zoom / scroll bugs auf mobile */
+body {
+  overscroll-behavior-y: none;
+}
+
+/* -------------------- */
+/* SNAP FEED SMOOTHER */
+/* -------------------- */
+
+.snap-y {
+  scroll-snap-type: y mandatory;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* -------------------- */
+/* BUTTON FEEL */
+/* -------------------- */
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* -------------------- */
+/* TEXT GRADIENT OVERLAY SUPPORT */
+/* -------------------- */
+
+.gradient-bottom {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85),
+    rgba(0, 0, 0, 0.4),
+    transparent
+  );
+}
+
+/* -------------------- */
+/* HEART ANIMATION ❤️ */
+/* -------------------- */
+
+@keyframes scaleHeart {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* optional class falls du sie brauchst */
+.heart-animation {
+  animation: scaleHeart 0.7s ease-out;
+}
+
+/* -------------------- */
+/* LIKE BUTTON PULSE */
+/* -------------------- */
+
+@keyframes likePulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.like-pulse {
+  animation: likePulse 0.3s ease;
+}
+
+/* -------------------- */
+/* FADE IN */
+/* -------------------- */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease;
+}
+
+/* -------------------- */
+/* PREVENT TEXT SELECT (APP FEEL) */
+/* -------------------- */
+
+.no-select {
+  user-select: none;
+}
+
+/* -------------------- */
+/* MOBILE SAFE AREAS */
+/* -------------------- */
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
 }
