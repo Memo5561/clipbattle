@@ -4,7 +4,7 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
-import {RefreshCw, Trophy, Volume2, VolumeX} from "lucide-react";
+import {RefreshCw, Trophy, Volume2, VolumeX, Check} from "lucide-react";
 
 type Clip = {
   id: string;
@@ -286,6 +286,7 @@ function SwipeVoteCard({
   const startXRef = useRef<number | null>(null);
 
   const threshold = 110;
+  const swipeProgress = Math.min(dragX / threshold, 1);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (voting) return;
@@ -322,8 +323,6 @@ function SwipeVoteCard({
     startXRef.current = null;
   };
 
-  const swipeProgress = Math.min(dragX / threshold, 1);
-
   return (
     <article
       className={`relative overflow-hidden rounded-[2rem] border bg-zinc-950 shadow-2xl transition-all duration-300 ${
@@ -335,8 +334,7 @@ function SwipeVoteCard({
       <div
         className="transition-transform duration-150 ease-out"
         style={{
-          transform: `translateX(${dragX}px) rotate(${dragX * 0.02}deg)`,
-          opacity: dragging ? 0.98 : 1
+          transform: `translateX(${dragX}px) rotate(${dragX * 0.025}deg) scale(${dragging ? 1.01 : 1})`
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -353,24 +351,34 @@ function SwipeVoteCard({
             className="aspect-video w-full object-cover bg-black"
           />
 
+          <div className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${color} opacity-25`} />
+
+          {/* Swipe overlay */}
           <div
-            className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${color} opacity-25`}
+            className="pointer-events-none absolute inset-y-0 left-0 z-10 bg-emerald-500/25 backdrop-blur-[1px] transition-all duration-75"
+            style={{width: `${swipeProgress * 100}%`}}
           />
 
-          <div
-            className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center"
-            style={{width: `${swipeProgress * 100}%`}}
-          >
-            <div className="h-full w-full bg-emerald-500/20 backdrop-blur-[1px]" />
-          </div>
-
+          {/* Vote badge */}
           <div className="pointer-events-none absolute left-4 top-1/2 z-20 -translate-y-1/2">
             <div
-              className={`rounded-full border border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 shadow-xl transition ${
-                dragX > 20 ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              className={`flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 shadow-xl transition ${
+                dragX > 10 ? "opacity-100 scale-100" : "opacity-0 scale-90"
               }`}
             >
-              Vote →
+              <Check size={16} />
+              VOTE
+            </div>
+          </div>
+
+          {/* Swipe text */}
+          <div className="pointer-events-none absolute bottom-4 right-4 z-20">
+            <div
+              className={`rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-xs font-medium text-white/85 backdrop-blur transition ${
+                dragX > 10 ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              → Swipe to vote
             </div>
           </div>
 
@@ -403,9 +411,7 @@ function SwipeVoteCard({
               <p className="mt-1 text-sm text-zinc-400">{clip.game}</p>
             </div>
 
-            <div
-              className={`rounded-full bg-gradient-to-r px-3 py-1 text-xs font-semibold text-white ${color}`}
-            >
+            <div className={`rounded-full bg-gradient-to-r px-3 py-1 text-xs font-semibold text-white ${color}`}>
               {clip.votes || 0} {t("votes")}
             </div>
           </div>
