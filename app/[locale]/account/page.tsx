@@ -1,10 +1,46 @@
 "use client";
 
+import { useState } from "react";
+import { supabase } from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
 
 export default function AccountPage() {
-  const handleTestClick = () => {
-    alert("TEST BUTTON FUNKTIONIERT");
+  const [loading, setLoading] = useState(false);
+
+  const handleTestRequest = async () => {
+    setLoading(true);
+
+    try {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        alert("Nicht eingeloggt");
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch(
+        "https://vdzsxmfrkdjcewwtgefv.supabase.co/functions/v1/delete-account",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          }
+        }
+      );
+
+      const data = await res.json().catch(() => null);
+
+      alert(`Status: ${res.status}\nAntwort: ${JSON.stringify(data)}`);
+    } catch (error) {
+      console.error(error);
+      alert("Request Fehler");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -18,15 +54,16 @@ export default function AccountPage() {
 
           <div className="rounded-2xl bg-zinc-900 p-5">
             <p className="text-sm text-zinc-400">
-              Teste jetzt nur, ob der Button überhaupt funktioniert.
+              Jetzt testen wir nur den Request zur Edge Function.
             </p>
 
             <button
               type="button"
-              onClick={handleTestClick}
-              className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white"
+              onClick={handleTestRequest}
+              disabled={loading}
+              className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white disabled:opacity-50"
             >
-              Test Button
+              {loading ? "Teste..." : "Function testen"}
             </button>
           </div>
         </div>
