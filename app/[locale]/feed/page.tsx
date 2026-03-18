@@ -116,11 +116,11 @@ export default function FeedPage() {
             <p className="text-zinc-400">{t("empty")}</p>
           </section>
         ) : (
-          <div className="h-[calc(100dvh-150px)] snap-y snap-mandatory overflow-y-auto rounded-[2rem] border border-zinc-800 bg-black">
+          <div className="h-screen snap-y snap-mandatory overflow-y-auto rounded-[2rem] border border-zinc-800 bg-black">
             {clips.map((clip) => (
               <section
                 key={clip.id}
-                className="relative h-[calc(100dvh-150px)] snap-start overflow-hidden"
+                className="relative h-screen snap-start overflow-hidden"
               >
                 <video
                   ref={(el) => {
