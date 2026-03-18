@@ -272,4 +272,131 @@ export default function BattlePage() {
                 <span>{clipB.username || t("unknownUser")}</span>
               </div>
 
-              <div className="h-3 overflow-hidden rounded
+              <div className="h-3 overflow-hidden rounded-full bg-zinc-800">
+                <div
+                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+                  style={{width: `${percentA}%`}}
+                />
+              </div>
+
+              <div className="mt-3 flex items-center justify-between text-xs text-zinc-500 sm:text-sm">
+                <span>
+                  {clipA.votes || 0} {t("votes")}
+                </span>
+                <span>
+                  {clipB.votes || 0} {t("votes")}
+                </span>
+              </div>
+
+              <p className="mt-4 text-center text-xs text-zinc-500 sm:text-sm">
+                Swipe nach links oder rechts für eine neue Runde.
+              </p>
+            </section>
+          </div>
+        )}
+      </div>
+    </ProtectedPage>
+  );
+}
+
+type BattleCardProps = {
+  clip: Clip;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+  muted: boolean;
+  onToggleMute: () => void;
+  onVote: () => void;
+  isWinner: boolean;
+  isLoser: boolean;
+  voting: boolean;
+  color: string;
+  t: (key: string, values?: Record<string, string | number>) => string;
+};
+
+function BattleCard({
+  clip,
+  videoRef,
+  muted,
+  onToggleMute,
+  onVote,
+  isWinner,
+  isLoser,
+  voting,
+  color,
+  t
+}: BattleCardProps) {
+  const username = clip.username || t("unknownUser");
+
+  return (
+    <article
+      className={`overflow-hidden rounded-[2rem] border bg-zinc-950 shadow-2xl transition-all duration-300 ${
+        isWinner
+          ? "border-emerald-400/40 ring-2 ring-emerald-400/20"
+          : "border-zinc-800"
+      } ${isLoser ? "opacity-60" : "opacity-100"}`}
+    >
+      <div className="relative">
+        <video
+          ref={videoRef}
+          src={clip.video_url}
+          autoPlay
+          loop
+          muted={muted}
+          playsInline
+          className="aspect-video w-full object-cover bg-black"
+        />
+
+        <div className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${color} opacity-25`} />
+
+        <button
+          type="button"
+          onClick={onToggleMute}
+          className="absolute left-3 top-3 z-20 rounded-full bg-black/65 p-2 text-white backdrop-blur transition hover:bg-black/85"
+        >
+          {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        </button>
+
+        {isWinner && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[1px]">
+            <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-2xl sm:text-base">
+              <span className="inline-flex items-center gap-2">
+                <Trophy size={18} />
+                {t("winner")}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4 p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="line-clamp-2 text-2xl font-bold text-white">
+              {clip.title}
+            </h2>
+            <p className="mt-1 text-sm text-zinc-400">{clip.game}</p>
+          </div>
+
+          <div className={`rounded-full bg-gradient-to-r px-3 py-1 text-xs font-semibold text-white ${color}`}>
+            {clip.votes || 0} {t("votes")}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-black/35 p-4 backdrop-blur-lg">
+          <p className="text-sm text-zinc-300">
+            {t("postedBy")}:{" "}
+            <span className="font-semibold text-white">{username}</span>
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onVote}
+          disabled={voting}
+          className={`w-full rounded-2xl bg-gradient-to-r px-6 py-4 text-base font-semibold text-white shadow-lg transition hover:scale-[1.01] disabled:opacity-60 ${color}`}
+        >
+          {clip.username ? t("voteFor", {username}) : t("voteForClip")}
+        </button>
+      </div>
+    </article>
+  );
+}
