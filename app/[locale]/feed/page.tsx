@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
@@ -25,7 +25,44 @@ export default function FeedPage() {
   const [showHeart, setShowHeart] = useState<string | null>(null);
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const lastTapRef = useRef<number>(0);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const playActiveVideo = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const viewportCenter = window.innerHeight / 2;
+    let bestId: string | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    clips.forEach((clip) => {
+      const section = sectionRefs.current[clip.id];
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+      const sectionCenter = rect.top + rect.height / 2;
+      const distance = Math.abs(sectionCenter - viewportCenter);
+
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestId = clip.id;
+      }
+    });
+
+    clips.forEach((clip) => {
+      const video = videoRefs.current[clip.id];
+      if (!video) return;
+
+      if (clip.id === bestId) {
+        video.muted = muted;
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, [clips, muted]);
 
   useEffect(() => {
     const load = async () => {
@@ -50,52 +87,47 @@ export default function FeedPage() {
   useEffect(() => {
     if (!clips.length) return;
 
-    const playVisibleVideo = () => {
-      const viewportCenter = window.innerHeight / 2;
+    const timeout = setTimeout(() => {
+      playActiveVideo();
+    }, 250);
 
-      Object.values(videoRefs.current).forEach((video) => {
-        if (!video) return;
-
-        const rect = video.getBoundingClientRect();
-        const isCentered = rect.top <= viewportCenter && rect.bottom >= viewportCenter;
-
-        if (isCentered) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      });
+    const handleVisibility = () => {
+      if (document.hidden) {
+        Object.values(videoRefs.current).forEach((video) => {
+          video?.pause();
+        });
+      } else {
+        setTimeout(() => {
+          playActiveVideo();
+        }, 150);
+      }
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target as HTMLVideoElement;
+    const handleScroll = () => {
+      playActiveVideo();
+    };
 
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
-        });
-      },
-      {threshold: [0.3, 0.6, 0.8]}
-    );
+    const handleResize = () => {
+      playActiveVideo();
+    };
 
-    Object.values(videoRefs.current).forEach((video) => {
-      if (video) observer.observe(video);
-    });
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("resize", handleResize);
 
-    playVisibleVideo();
-    window.addEventListener("scroll", playVisibleVideo, {passive: true});
-    window.addEventListener("resize", playVisibleVideo);
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll, {passive: true});
+    }
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", playVisibleVideo);
-      window.removeEventListener("resize", playVisibleVideo);
+      clearTimeout(timeout);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("resize", handleResize);
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
     };
-  }, [clips]);
+  }, [clips, playActiveVideo]);
 
   const toggleMute = () => {
     const newMuted = !muted;
@@ -104,11 +136,12 @@ export default function FeedPage() {
     Object.values(videoRefs.current).forEach((video) => {
       if (video) {
         video.muted = newMuted;
-        if (!newMuted) {
-          video.play().catch(() => {});
-        }
       }
     });
+
+    setTimeout(() => {
+      playActiveVideo();
+    }, 50);
   };
 
   const handleLike = async (clipId: string) => {
@@ -179,10 +212,16 @@ export default function FeedPage() {
   return (
     <ProtectedPage>
       <div className="fixed inset-0 z-50 bg-black text-white">
-        <div className="h-[100dvh] snap-y snap-mandatory overflow-y-auto">
+        <div
+          ref={scrollContainerRef}
+          className="h-[100dvh] snap-y snap-mandatory overflow-y-auto"
+        >
           {clips.map((clip) => (
             <section
               key={clip.id}
+              ref={(el) => {
+                sectionRefs.current[clip.id] = el;
+              }}
               className="relative h-[100dvh] snap-start overflow-hidden bg-black"
             >
               <video
@@ -193,8 +232,7 @@ export default function FeedPage() {
                 muted={muted}
                 loop
                 playsInline
-                autoPlay
-                preload="metadata"
+                preload="auto"
                 onClick={() => handleDoubleTap(clip.id)}
                 className="absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover brightness-90"
               />
