@@ -7,7 +7,7 @@ import ProtectedPage from "../../components/protected-page";
 export default function AccountPage() {
   const [loading, setLoading] = useState(false);
 
-  const handleTestRequest = async () => {
+  const handleDebug = async () => {
     setLoading(true);
 
     try {
@@ -16,28 +16,32 @@ export default function AccountPage() {
       } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        alert("Nicht eingeloggt");
+        alert("Kein access_token gefunden");
         setLoading(false);
         return;
       }
 
-      const res = await fetch(
-        "https://vdzsxmfrkdjcewwtgefv.supabase.co/functions/v1/delete-account",
+      const token = session.access_token;
+
+      const authRes = await fetch(
+        "https://vdzsxmfrkdjcewwtgefv.supabase.co/auth/v1/user",
         {
-          method: "POST",
+          method: "GET",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            Authorization: `Bearer ${token}`
           }
         }
       );
 
-      const data = await res.json().catch(() => null);
+      const authData = await authRes.json().catch(() => null);
 
-      alert(`Status: ${res.status}\nAntwort: ${JSON.stringify(data)}`);
+      alert(
+        `AUTH TEST\nStatus: ${authRes.status}\nAntwort: ${JSON.stringify(authData)}`
+      );
     } catch (error) {
       console.error(error);
-      alert("Request Fehler");
+      alert("Debug Fehler");
     } finally {
       setLoading(false);
     }
@@ -54,16 +58,16 @@ export default function AccountPage() {
 
           <div className="rounded-2xl bg-zinc-900 p-5">
             <p className="text-sm text-zinc-400">
-              Jetzt testen wir nur den Request zur Edge Function.
+              Wir testen jetzt direkt, ob dein aktueller Token bei Supabase gültig ist.
             </p>
 
             <button
               type="button"
-              onClick={handleTestRequest}
+              onClick={handleDebug}
               disabled={loading}
               className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white disabled:opacity-50"
             >
-              {loading ? "Teste..." : "Function testen"}
+              {loading ? "Teste..." : "Auth Test"}
             </button>
           </div>
         </div>
