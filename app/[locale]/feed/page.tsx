@@ -165,46 +165,81 @@ export default function FeedPage() {
     }, 50);
   };
 
-  const handleLike = async (clipId: string) => {
+  const handleToggleLike = async (clipId: string) => {
     if (!userId || likingId) return;
-    if (likedClipIds.includes(clipId)) return;
 
     const clip = clips.find((item) => item.id === clipId);
     if (!clip) return;
 
+    const isLiked = likedClipIds.includes(clipId);
     setLikingId(clipId);
 
-    const {error: likeError} = await supabase.from("clip_likes").insert({
-      clip_id: clipId,
-      user_id: userId
-    });
+    if (!isLiked) {
+      const {error: likeError} = await supabase.from("clip_likes").insert({
+        clip_id: clipId,
+        user_id: userId
+      });
 
-    if (likeError) {
-      console.error("Fehler beim Speichern des Likes:", likeError.message);
-      setLikingId(null);
-      return;
+      if (likeError) {
+        console.error("Fehler beim Speichern des Likes:", likeError.message);
+        setLikingId(null);
+        return;
+      }
+
+      const newVotes = (clip.votes || 0) + 1;
+
+      const {error: updateError} = await supabase
+        .from("clips")
+        .update({votes: newVotes})
+        .eq("id", clipId);
+
+      if (updateError) {
+        console.error("Fehler beim Aktualisieren der Votes:", updateError.message);
+        setLikingId(null);
+        return;
+      }
+
+      setLikedClipIds((prev) => [...prev, clipId]);
+
+      setClips((prev) =>
+        prev.map((item) =>
+          item.id === clipId ? {...item, votes: newVotes} : item
+        )
+      );
+    } else {
+      const {error: deleteError} = await supabase
+        .from("clip_likes")
+        .delete()
+        .eq("clip_id", clipId)
+        .eq("user_id", userId);
+
+      if (deleteError) {
+        console.error("Fehler beim Entfernen des Likes:", deleteError.message);
+        setLikingId(null);
+        return;
+      }
+
+      const newVotes = Math.max((clip.votes || 0) - 1, 0);
+
+      const {error: updateError} = await supabase
+        .from("clips")
+        .update({votes: newVotes})
+        .eq("id", clipId);
+
+      if (updateError) {
+        console.error("Fehler beim Aktualisieren der Votes:", updateError.message);
+        setLikingId(null);
+        return;
+      }
+
+      setLikedClipIds((prev) => prev.filter((id) => id !== clipId));
+
+      setClips((prev) =>
+        prev.map((item) =>
+          item.id === clipId ? {...item, votes: newVotes} : item
+        )
+      );
     }
-
-    const newVotes = (clip.votes || 0) + 1;
-
-    const {error: updateError} = await supabase
-      .from("clips")
-      .update({votes: newVotes})
-      .eq("id", clipId);
-
-    if (updateError) {
-      console.error("Fehler beim Aktualisieren der Votes:", updateError.message);
-      setLikingId(null);
-      return;
-    }
-
-    setLikedClipIds((prev) => [...prev, clipId]);
-
-    setClips((prev) =>
-      prev.map((item) =>
-        item.id === clipId ? {...item, votes: newVotes} : item
-      )
-    );
 
     setLikingId(null);
   };
@@ -215,7 +250,7 @@ export default function FeedPage() {
 
     if (now - lastTapRef.current < doubleTapDelay) {
       if (!likedClipIds.includes(clipId)) {
-        handleLike(clipId);
+        handleToggleLike(clipId);
       }
 
       setShowHeart(clipId);
@@ -304,8 +339,8 @@ export default function FeedPage() {
                 <div className="absolute right-4 bottom-28 z-20 flex flex-col items-center gap-6">
                   <button
                     type="button"
-                    onClick={() => handleLike(clip.id)}
-                    disabled={likingId === clip.id || isLiked || !userId}
+                    onClick={() => handleToggleLike(clip.id)}
+                    disabled={likingId === clip.id || !userId}
                     className="flex flex-col items-center text-white disabled:opacity-60"
                   >
                     <Heart
