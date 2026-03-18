@@ -148,7 +148,7 @@ export default function FeedPage() {
                 loop
                 playsInline
                 autoPlay
-                className="absolute inset-0 h-full w-full object-cover scale-125 brightness-90"
+                className="absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover brightness-90"
               />
 
               <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/85" />
