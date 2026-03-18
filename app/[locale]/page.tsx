@@ -19,7 +19,6 @@ export default async function HomePage({params}: Props) {
 
   return (
     <div className="space-y-6 text-white sm:space-y-8 md:space-y-10">
-      {/* HERO */}
       <section className="relative overflow-hidden rounded-[1.75rem] border border-zinc-800 bg-zinc-900/80 px-4 py-10 backdrop-blur-xl sm:px-6 sm:py-12 md:rounded-[2rem] md:px-10 md:py-20">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.22),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.18),transparent_28%)]" />
 
@@ -77,7 +76,6 @@ export default async function HomePage({params}: Props) {
         </div>
       </section>
 
-      {/* PREVIEW + WHY */}
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-[1.75rem] border border-zinc-800 bg-zinc-900/80 p-4 backdrop-blur-xl sm:p-6 md:rounded-[2rem]">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -159,7 +157,6 @@ export default async function HomePage({params}: Props) {
         </div>
       </section>
 
-      {/* FEATURES */}
       <section className="rounded-[1.75rem] border border-zinc-800 bg-zinc-900/80 p-4 backdrop-blur-xl sm:p-6 md:rounded-[2rem] md:p-8">
         <div className="mb-6">
           <p className="text-xs text-zinc-400 sm:text-sm">{t("featuresBadge")}</p>
