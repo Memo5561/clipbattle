@@ -77,7 +77,10 @@
     "voteForClip": "Bu klibe oy ver",
     "battleRunning": "Battle sürüyor...",
     "clickVideo": "Videoya tıkla = Duraklat / Oynat",
-    "unknownUser": "Bilinmiyor"
+    "unknownUser": "Bilinmiyor",
+    "swipeToVote": "Oy vermek için sağa kaydır",
+    "swipeHint": "Bu klibe oy vermek için kartı sağa kaydır.",
+    "voteBadge": "OY VER"
   },
   "Upload": {
     "badge": "🎥 Klibini yükle",
