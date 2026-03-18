@@ -1,46 +1,32 @@
 "use client";
 
-import {useEffect, useMemo, useRef, useState} from "react";
-import {useTranslations} from "next-intl";
+import {useEffect, useRef, useState} from "react";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
-import {
-  RefreshCw,
-  Trophy,
-  Volume2,
-  VolumeX,
-  Check,
-  ArrowRight
-} from "lucide-react";
+import {RefreshCw, Volume2, VolumeX, Trophy} from "lucide-react";
 
 type Clip = {
   id: string;
   title: string;
-  game: string;
   video_url: string;
-  votes: number;
   username: string | null;
+  votes: number;
 };
 
 export default function BattlePage() {
-  const t = useTranslations("Battle");
-
   const [clips, setClips] = useState<Clip[]>([]);
   const [clipA, setClipA] = useState<Clip | null>(null);
   const [clipB, setClipB] = useState<Clip | null>(null);
   const [loading, setLoading] = useState(true);
-  const [voting, setVoting] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
+
+  const videoRefA = useRef<HTMLVideoElement>(null);
+  const videoRefB = useRef<HTMLVideoElement>(null);
 
   const [mutedA, setMutedA] = useState(true);
   const [mutedB, setMutedB] = useState(true);
 
-  const videoRefA = useRef<HTMLVideoElement | null>(null);
-  const videoRefB = useRef<HTMLVideoElement | null>(null);
-
-  const fetchBattle = async () => {
-    setLoading(true);
-
+  const fetchClips = async () => {
     const {data} = await supabase
       .from("clips")
       .select("*")
@@ -51,13 +37,12 @@ export default function BattlePage() {
       return;
     }
 
-    const loadedClips = data as Clip[];
-    setClips(loadedClips);
-    generateBattlePair(loadedClips);
+    setClips(data);
+    generatePair(data);
     setLoading(false);
   };
 
-  const generateBattlePair = (list: Clip[]) => {
+  const generatePair = (list: Clip[]) => {
     const shuffled = [...list].sort(() => Math.random() - 0.5);
     setClipA(shuffled[0]);
     setClipB(shuffled[1]);
@@ -65,70 +50,64 @@ export default function BattlePage() {
   };
 
   useEffect(() => {
-    fetchBattle();
+    fetchClips();
   }, []);
 
-  const handleVote = async (winner: Clip) => {
-    if (voting) return;
-
-    setVoting(true);
-    setWinnerId(winner.id);
+  const vote = async (clip: Clip) => {
+    setWinnerId(clip.id);
 
     await supabase
       .from("clips")
-      .update({votes: winner.votes + 1})
-      .eq("id", winner.id);
+      .update({votes: clip.votes + 1})
+      .eq("id", clip.id);
 
     setTimeout(() => {
-      generateBattlePair(clips);
-      setVoting(false);
-    }, 900);
+      generatePair(clips);
+    }, 800);
   };
+
+  if (loading || !clipA || !clipB) {
+    return <div className="text-center text-zinc-400 mt-20">Loading...</div>;
+  }
 
   return (
     <ProtectedPage>
-      <div className="text-white">
-        {loading || !clipA || !clipB ? (
-          <div className="flex h-[60vh] items-center justify-center text-zinc-400">
-            {t("loading")}
-          </div>
-        ) : (
-          <div className="mx-auto max-w-5xl space-y-4">
-            
-            {/* HEADER */}
-            <section className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900/80 px-4 py-3">
-              <h1 className="text-xl font-bold">{t("title")}</h1>
+      <div className="text-white mx-auto max-w-5xl space-y-2">
 
-              <button
-                onClick={() => generateBattlePair(clips)}
-                className="flex items-center gap-2 rounded-xl bg-zinc-800 px-4 py-2"
-              >
-                <RefreshCw size={16} />
-                {t("newRound")}
-              </button>
-            </section>
+        {/* HEADER */}
+        <div className="flex justify-between items-center p-4 rounded-3xl bg-zinc-900 border border-zinc-800">
+          <h1 className="text-xl font-bold">Battle</h1>
 
-            <SwipeCard
-              clip={clipA}
-              videoRef={videoRefA}
-              muted={mutedA}
-              onToggleMute={() => setMutedA(!mutedA)}
-              onVote={() => handleVote(clipA)}
-              isWinner={winnerId === clipA.id}
-            />
+          <button
+            onClick={() => generatePair(clips)}
+            className="flex items-center gap-2 bg-zinc-800 px-4 py-2 rounded-xl"
+          >
+            <RefreshCw size={16} />
+            Neue Runde
+          </button>
+        </div>
 
-            <div className="text-center text-zinc-500">VS</div>
+        {/* CLIP A */}
+        <SwipeCard
+          clip={clipA}
+          videoRef={videoRefA}
+          muted={mutedA}
+          toggleMute={() => setMutedA(!mutedA)}
+          onVote={() => vote(clipA)}
+          isWinner={winnerId === clipA.id}
+        />
 
-            <SwipeCard
-              clip={clipB}
-              videoRef={videoRefB}
-              muted={mutedB}
-              onToggleMute={() => setMutedB(!mutedB)}
-              onVote={() => handleVote(clipB)}
-              isWinner={winnerId === clipB.id}
-            />
-          </div>
-        )}
+        <div className="text-center text-xs text-zinc-600">VS</div>
+
+        {/* CLIP B */}
+        <SwipeCard
+          clip={clipB}
+          videoRef={videoRefB}
+          muted={mutedB}
+          toggleMute={() => setMutedB(!mutedB)}
+          onVote={() => vote(clipB)}
+          isWinner={winnerId === clipB.id}
+        />
       </div>
     </ProtectedPage>
   );
@@ -138,7 +117,7 @@ function SwipeCard({
   clip,
   videoRef,
   muted,
-  onToggleMute,
+  toggleMute,
   onVote,
   isWinner
 }: any) {
@@ -150,7 +129,7 @@ function SwipeCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-3xl border border-zinc-800"
+      className="relative overflow-hidden rounded-3xl border border-zinc-800 shadow-2xl"
       onTouchStart={(e) => (startX.current = e.touches[0].clientX)}
       onTouchMove={(e) => {
         if (!startX.current) return;
@@ -166,18 +145,20 @@ function SwipeCard({
         transform: `translateX(${dragX}px)`
       }}
     >
+      {/* VIDEO */}
       <video
         ref={videoRef}
         src={clip.video_url}
         autoPlay
         loop
         muted={muted}
-        className="w-full aspect-video object-cover"
+        playsInline
+        className="h-[70vh] w-full object-cover"
       />
 
-      {/* SMOOTH SWIPE OVERLAY */}
+      {/* SMOOTH GREEN SWIPE */}
       <div
-        className="absolute inset-y-0 left-0 bg-green-500/30"
+        className="absolute inset-y-0 left-0 bg-emerald-500/30"
         style={{
           width: "100%",
           transform: `scaleX(${progress})`,
@@ -186,26 +167,26 @@ function SwipeCard({
       />
 
       {/* DARK OVERLAY */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
 
-      {/* CONTENT */}
-      <div className="absolute bottom-4 left-4">
-        <h2 className="text-xl font-bold">{clip.title}</h2>
+      {/* TEXT */}
+      <div className="absolute bottom-5 left-5">
+        <h2 className="text-2xl font-bold">{clip.title}</h2>
         <p className="text-sm text-zinc-400">{clip.username}</p>
       </div>
 
       {/* MUTE */}
       <button
-        onClick={onToggleMute}
-        className="absolute top-3 left-3 bg-black/60 p-2 rounded-full"
+        onClick={toggleMute}
+        className="absolute top-4 left-4 bg-black/60 p-2 rounded-full"
       >
-        {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
       </button>
 
       {/* WINNER */}
       {isWinner && (
-        <div className="absolute inset-0 flex items-center justify-center bg-green-500/20">
-          <Trophy />
+        <div className="absolute inset-0 flex items-center justify-center bg-emerald-500/20">
+          <Trophy size={40} />
         </div>
       )}
     </div>
