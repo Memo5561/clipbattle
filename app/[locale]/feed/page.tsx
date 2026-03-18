@@ -37,15 +37,15 @@ export default function FeedPage() {
   const playActiveVideo = useCallback(() => {
     const viewportCenter = window.innerHeight / 2;
     let bestId: string | null = null;
-    let bestDistance = Number.POSITIVE_INFINITY;
+    let bestDistance = Infinity;
 
     clips.forEach((clip) => {
       const section = sectionRefs.current[clip.id];
       if (!section) return;
 
       const rect = section.getBoundingClientRect();
-      const sectionCenter = rect.top + rect.height / 2;
-      const distance = Math.abs(sectionCenter - viewportCenter);
+      const center = rect.top + rect.height / 2;
+      const distance = Math.abs(center - viewportCenter);
 
       if (distance < bestDistance) {
         bestDistance = distance;
@@ -76,30 +76,26 @@ export default function FeedPage() {
 
       setUserId(user?.id ?? null);
 
-      const {data: clipsData, error: clipsError} = await supabase
+      const {data, error} = await supabase
         .from("clips")
         .select("*")
         .order("created_at", {ascending: false});
 
-      if (clipsError) {
-        console.error("Fehler beim Laden des Feeds:", clipsError.message);
+      if (error) {
+        console.error(error.message);
         setLoading(false);
         return;
       }
 
-      setClips((clipsData as Clip[]) || []);
+      setClips((data as Clip[]) || []);
 
       if (user) {
-        const {data: likesData, error: likesError} = await supabase
+        const {data: likes} = await supabase
           .from("clip_likes")
           .select("clip_id")
           .eq("user_id", user.id);
 
-        if (likesError) {
-          console.error("Fehler beim Laden der Likes:", likesError.message);
-        } else {
-          setLikedClipIds((likesData || []).map((item) => item.clip_id));
-        }
+        setLikedClipIds((likes || []).map((l) => l.clip_id));
       }
 
       setLoading(false);
@@ -111,148 +107,77 @@ export default function FeedPage() {
   useEffect(() => {
     if (!clips.length) return;
 
-    const timeout = setTimeout(() => {
-      playActiveVideo();
-    }, 250);
+    const timeout = setTimeout(playActiveVideo, 200);
 
-    const handleVisibility = () => {
-      if (document.hidden) {
-        Object.values(videoRefs.current).forEach((video) => {
-          video?.pause();
-        });
-      } else {
-        setTimeout(() => {
-          playActiveVideo();
-        }, 150);
-      }
-    };
-
-    const handleScroll = () => {
-      playActiveVideo();
-    };
-
-    const handleResize = () => {
-      playActiveVideo();
-    };
-
-    document.addEventListener("visibilitychange", handleVisibility);
-    window.addEventListener("resize", handleResize);
-
+    const handleScroll = () => playActiveVideo();
     const container = scrollContainerRef.current;
+
     if (container) {
-      container.addEventListener("scroll", handleScroll, {passive: true});
+      container.addEventListener("scroll", handleScroll);
     }
 
     return () => {
       clearTimeout(timeout);
-      document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("resize", handleResize);
       if (container) {
         container.removeEventListener("scroll", handleScroll);
       }
     };
   }, [clips, playActiveVideo]);
 
-  const triggerLikeAnimation = (clipId: string) => {
-    setAnimatedLikeId(clipId);
-    setTimeout(() => {
-      setAnimatedLikeId(null);
-    }, 350);
-  };
-
   const toggleMute = () => {
-    const newMuted = !muted;
-    setMuted(newMuted);
-
-    Object.values(videoRefs.current).forEach((video) => {
-      if (video) {
-        video.muted = newMuted;
-      }
-    });
-
-    setTimeout(() => {
-      playActiveVideo();
-    }, 50);
+    setMuted((prev) => !prev);
   };
 
-  const handleToggleLike = async (clipId: string) => {
+  const triggerLikeAnimation = (id: string) => {
+    setAnimatedLikeId(id);
+    setTimeout(() => setAnimatedLikeId(null), 300);
+  };
+
+  const handleLike = async (clip: Clip) => {
     if (!userId || likingId) return;
 
-    const clip = clips.find((item) => item.id === clipId);
-    if (!clip) return;
-
-    const isLiked = likedClipIds.includes(clipId);
-    setLikingId(clipId);
+    const isLiked = likedClipIds.includes(clip.id);
+    setLikingId(clip.id);
 
     if (!isLiked) {
-      const {error: likeError} = await supabase.from("clip_likes").insert({
-        clip_id: clipId,
+      await supabase.from("clip_likes").insert({
+        clip_id: clip.id,
         user_id: userId
       });
 
-      if (likeError) {
-        console.error("Fehler beim Speichern des Likes:", likeError.message);
-        setLikingId(null);
-        return;
-      }
+      const newVotes = clip.votes + 1;
 
-      const newVotes = (clip.votes || 0) + 1;
-
-      const {error: updateError} = await supabase
+      await supabase
         .from("clips")
         .update({votes: newVotes})
-        .eq("id", clipId);
+        .eq("id", clip.id);
 
-      if (updateError) {
-        console.error("Fehler beim Aktualisieren der Votes:", updateError.message);
-        setLikingId(null);
-        return;
-      }
-
-      setLikedClipIds((prev) => [...prev, clipId]);
-
+      setLikedClipIds((prev) => [...prev, clip.id]);
       setClips((prev) =>
-        prev.map((item) =>
-          item.id === clipId ? {...item, votes: newVotes} : item
-        )
+        prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
       );
 
-      triggerLikeAnimation(clipId);
+      triggerLikeAnimation(clip.id);
     } else {
-      const {error: deleteError} = await supabase
+      await supabase
         .from("clip_likes")
         .delete()
-        .eq("clip_id", clipId)
+        .eq("clip_id", clip.id)
         .eq("user_id", userId);
 
-      if (deleteError) {
-        console.error("Fehler beim Entfernen des Likes:", deleteError.message);
-        setLikingId(null);
-        return;
-      }
+      const newVotes = Math.max(clip.votes - 1, 0);
 
-      const newVotes = Math.max((clip.votes || 0) - 1, 0);
-
-      const {error: updateError} = await supabase
+      await supabase
         .from("clips")
         .update({votes: newVotes})
-        .eq("id", clipId);
+        .eq("id", clip.id);
 
-      if (updateError) {
-        console.error("Fehler beim Aktualisieren der Votes:", updateError.message);
-        setLikingId(null);
-        return;
-      }
-
-      setLikedClipIds((prev) => prev.filter((id) => id !== clipId));
-
+      setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
       setClips((prev) =>
-        prev.map((item) =>
-          item.id === clipId ? {...item, votes: newVotes} : item
-        )
+        prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
       );
 
-      triggerLikeAnimation(clipId);
+      triggerLikeAnimation(clip.id);
     }
 
     setLikingId(null);
@@ -260,18 +185,13 @@ export default function FeedPage() {
 
   const handleDoubleTap = (clipId: string) => {
     const now = Date.now();
-    const doubleTapDelay = 300;
 
-    if (now - lastTapRef.current < doubleTapDelay) {
-      if (!likedClipIds.includes(clipId)) {
-        handleToggleLike(clipId);
-      }
+    if (now - lastTapRef.current < 300) {
+      const clip = clips.find((c) => c.id === clipId);
+      if (clip) handleLike(clip);
 
       setShowHeart(clipId);
-
-      setTimeout(() => {
-        setShowHeart(null);
-      }, 700);
+      setTimeout(() => setShowHeart(null), 600);
     }
 
     lastTapRef.current = now;
@@ -280,18 +200,8 @@ export default function FeedPage() {
   if (loading) {
     return (
       <ProtectedPage>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black text-white">
-          <p className="text-zinc-400">{t("loading")}</p>
-        </div>
-      </ProtectedPage>
-    );
-  }
-
-  if (clips.length === 0) {
-    return (
-      <ProtectedPage>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black text-white">
-          <p className="text-zinc-400">{t("empty")}</p>
+        <div className="flex h-screen items-center justify-center text-white">
+          {t("loading")}
         </div>
       </ProtectedPage>
     );
@@ -299,109 +209,73 @@ export default function FeedPage() {
 
   return (
     <ProtectedPage>
-      <div className="fixed inset-0 z-50 bg-black text-white">
+      <div className="fixed inset-0 bg-black text-white">
         <div
           ref={scrollContainerRef}
-          className="h-[100dvh] snap-y snap-mandatory overflow-y-auto"
+          className="h-screen snap-y snap-mandatory overflow-y-auto"
         >
           {clips.map((clip) => {
             const isLiked = likedClipIds.includes(clip.id);
-            const isAnimating = animatedLikeId === clip.id;
 
             return (
               <section
                 key={clip.id}
-                ref={(el) => {
-                  sectionRefs.current[clip.id] = el;
-                }}
-                className="relative h-[100dvh] snap-start overflow-hidden bg-black"
+                ref={(el) => (sectionRefs.current[clip.id] = el)}
+                className="relative h-screen snap-start"
               >
                 <video
-                  ref={(el) => {
-                    videoRefs.current[clip.id] = el;
-                  }}
+                  ref={(el) => (videoRefs.current[clip.id] = el)}
                   src={clip.video_url}
                   muted={muted}
                   loop
                   playsInline
-                  preload="auto"
                   onClick={() => handleDoubleTap(clip.id)}
-                  className="absolute left-1/2 top-1/2 h-[105%] w-[105%] -translate-x-1/2 -translate-y-1/2 object-cover brightness-90"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
 
-                {showHeart === clip.id && (
-                  <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80" />
+
+                {/* Mute */}
+                <button
+                  onClick={toggleMute}
+                  className="absolute top-6 right-4 z-20 bg-black/50 p-3 rounded-full"
+                >
+                  {muted ? <VolumeX /> : <Volume2 />}
+                </button>
+
+                {/* Like */}
+                <div className="absolute right-4 bottom-28 z-20 flex flex-col items-center">
+                  <button onClick={() => handleLike(clip)}>
                     <Heart
-                      className={`h-24 w-24 animate-[scaleHeart_0.7s_ease-out] ${
-                        isLiked ? "fill-red-500 text-red-500" : "fill-white text-white"
+                      className={`h-8 w-8 ${
+                        isLiked ? "text-red-500 fill-red-500" : "text-white"
                       }`}
                     />
+                  </button>
+                  <span>{clip.votes}</span>
+                </div>
+
+                {/* Info */}
+                <div className="absolute bottom-10 left-4 right-20 z-20">
+                  <h2 className="text-2xl font-bold">{clip.title}</h2>
+
+                  {/* 🔥 USER + BUTTON */}
+                  <div className="mt-2 flex items-center gap-3">
+                    <p className="text-sm text-zinc-300">
+                      {clip.username || "Unknown"}
+                    </p>
+
+                    <FriendRequestButton targetUserId={clip.user_id} />
+                  </div>
+                </div>
+
+                {/* Double Tap Heart */}
+                {showHeart === clip.id && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Heart className="h-24 w-24 text-white animate-ping" />
                   </div>
                 )}
-
-                <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/85" />
-
-                <div className="absolute right-4 top-6 z-20">
-                  <button
-                    type="button"
-                    onClick={toggleMute}
-                    className="rounded-full bg-black/55 p-3 text-white backdrop-blur transition hover:bg-black/75"
-                  >
-                    {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                  </button>
-                </div>
-
-                <div className="absolute right-4 bottom-28 z-20 flex flex-col items-center gap-6">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleLike(clip.id)}
-                    disabled={likingId === clip.id || !userId}
-                    className="flex flex-col items-center text-white disabled:opacity-60"
-                  >
-                    <Heart
-                      className={`h-8 w-8 transition-transform duration-200 ${
-                        isLiked ? "fill-red-500 text-red-500" : "fill-white text-white"
-                      } ${isAnimating ? "animate-[likePulse_0.35s_ease]" : ""}`}
-                    />
-                    <span
-                      className={`mt-1 text-sm font-semibold transition-transform duration-200 ${
-                        isAnimating ? "scale-110" : "scale-100"
-                      }`}
-                    >
-                      {clip.votes}
-                    </span>
-                    <span className="text-[11px] text-zinc-300">
-                      {t("votes")}
-                    </span>
-                  </button>
-                </div>
-
-                <div className="absolute bottom-10 left-4 right-20 z-20">
-                  <div className="mb-3 inline-block rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs text-zinc-200 backdrop-blur">
-                    {t("badge")}
-                  </div>
-
-                  <h2 className="line-clamp-2 text-3xl font-bold text-white">
-                    {clip.title}
-                  </h2>
-
-                  <p className="mt-2 text-base text-zinc-300">
-                    {clip.game || t("gameFallback")}
-                  </p>
-
-                  <p className="mt-2 text-sm text-zinc-400">
-                    {t("postedBy")}:{" "}
-                    <span className="font-semibold text-white">
-                      {clip.username || t("unknownUser")}
-                    </span>
-                  </p>
-
-                  {clip.user_id && (
-                    <div className="mt-3">
-                      <FriendRequestButton targetUserId={clip.user_id} />
-                    </div>
-                  )}
-                </div>
               </section>
             );
           })}
