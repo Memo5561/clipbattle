@@ -25,6 +25,7 @@ export default function FeedPage() {
   const [showHeart, setShowHeart] = useState<string | null>(null);
   const [likedClipIds, setLikedClipIds] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [animatedLikeId, setAnimatedLikeId] = useState<string | null>(null);
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -150,6 +151,13 @@ export default function FeedPage() {
     };
   }, [clips, playActiveVideo]);
 
+  const triggerLikeAnimation = (clipId: string) => {
+    setAnimatedLikeId(clipId);
+    setTimeout(() => {
+      setAnimatedLikeId(null);
+    }, 350);
+  };
+
   const toggleMute = () => {
     const newMuted = !muted;
     setMuted(newMuted);
@@ -206,6 +214,8 @@ export default function FeedPage() {
           item.id === clipId ? {...item, votes: newVotes} : item
         )
       );
+
+      triggerLikeAnimation(clipId);
     } else {
       const {error: deleteError} = await supabase
         .from("clip_likes")
@@ -239,6 +249,8 @@ export default function FeedPage() {
           item.id === clipId ? {...item, votes: newVotes} : item
         )
       );
+
+      triggerLikeAnimation(clipId);
     }
 
     setLikingId(null);
@@ -292,6 +304,7 @@ export default function FeedPage() {
         >
           {clips.map((clip) => {
             const isLiked = likedClipIds.includes(clip.id);
+            const isAnimating = animatedLikeId === clip.id;
 
             return (
               <section
@@ -344,11 +357,15 @@ export default function FeedPage() {
                     className="flex flex-col items-center text-white disabled:opacity-60"
                   >
                     <Heart
-                      className={`h-8 w-8 ${
+                      className={`h-8 w-8 transition-transform duration-200 ${
                         isLiked ? "fill-red-500 text-red-500" : "fill-white text-white"
-                      }`}
+                      } ${isAnimating ? "animate-[likePulse_0.35s_ease]" : ""}`}
                     />
-                    <span className="mt-1 text-sm font-semibold">
+                    <span
+                      className={`mt-1 text-sm font-semibold transition-transform duration-200 ${
+                        isAnimating ? "scale-110" : "scale-100"
+                      }`}
+                    >
                       {clip.votes}
                     </span>
                     <span className="text-[11px] text-zinc-300">
