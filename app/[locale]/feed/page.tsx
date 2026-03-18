@@ -21,19 +21,25 @@ export default function FeedPage() {
 
   useEffect(() => {
     const load = async () => {
-      const {data} = await supabase
+      const {data, error} = await supabase
         .from("clips")
         .select("*")
         .order("created_at", {ascending: false});
 
-      setClips(data || []);
+      if (error) {
+        console.error("Fehler beim Laden des Feeds:", error.message);
+        return;
+      }
+
+      setClips((data as Clip[]) || []);
     };
 
     load();
   }, []);
 
-  // Auto play / pause
   useEffect(() => {
+    if (!clips.length) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -49,8 +55,8 @@ export default function FeedPage() {
       {threshold: 0.7}
     );
 
-    Object.values(videoRefs.current).forEach((v) => {
-      if (v) observer.observe(v);
+    Object.values(videoRefs.current).forEach((video) => {
+      if (video) observer.observe(video);
     });
 
     return () => observer.disconnect();
@@ -60,8 +66,10 @@ export default function FeedPage() {
     const newMuted = !muted;
     setMuted(newMuted);
 
-    Object.values(videoRefs.current).forEach((v) => {
-      if (v) v.muted = newMuted;
+    Object.values(videoRefs.current).forEach((video) => {
+      if (video) {
+        video.muted = newMuted;
+      }
     });
   };
 
@@ -72,37 +80,40 @@ export default function FeedPage() {
           {clips.map((clip) => (
             <section
               key={clip.id}
-              className="relative h-[100dvh] snap-start"
+              className="relative h-[100dvh] snap-start overflow-hidden"
             >
-              {/* VIDEO */}
               <video
-                ref={(el) => (videoRefs.current[clip.id] = el)}
+                ref={(el) => {
+                  videoRefs.current[clip.id] = el;
+                }}
                 src={clip.video_url}
-                muted
+                muted={muted}
                 loop
                 playsInline
                 className="absolute inset-0 h-full w-full object-cover"
               />
 
-              {/* DARK OVERLAY */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
 
-              {/* RIGHT SIDE ACTIONS */}
               <div className="absolute right-4 bottom-24 flex flex-col items-center gap-6">
-                <button className="flex flex-col items-center">
+                <button type="button" className="flex flex-col items-center">
                   <Heart className="h-7 w-7 fill-white" />
                   <span className="text-sm">{clip.votes}</span>
                 </button>
 
-                <button onClick={toggleMute}>
+                <button type="button" onClick={toggleMute}>
                   {muted ? <VolumeX /> : <Volume2 />}
                 </button>
               </div>
 
-              {/* TEXT OVERLAY */}
               <div className="absolute bottom-10 left-4 right-20">
+                <div className="mb-3 inline-block rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs text-zinc-200 backdrop-blur">
+                  🔥 Community Feed
+                </div>
+
                 <h2 className="text-2xl font-bold">{clip.title}</h2>
-                <p className="text-sm text-gray-300">
+
+                <p className="mt-2 text-sm text-gray-300">
                   @{clip.username || "user"}
                 </p>
               </div>
