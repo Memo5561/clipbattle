@@ -4,7 +4,14 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
-import {RefreshCw, Trophy, Volume2, VolumeX, Check} from "lucide-react";
+import {
+  RefreshCw,
+  Trophy,
+  Volume2,
+  VolumeX,
+  Check,
+  ArrowRight
+} from "lucide-react";
 
 type Clip = {
   id: string;
@@ -143,7 +150,7 @@ export default function BattlePage() {
     setTimeout(() => {
       generateBattlePair(updatedClips);
       setVoting(false);
-    }, 1200);
+    }, 1100);
   };
 
   const toggleMute = (
@@ -189,7 +196,7 @@ export default function BattlePage() {
               </button>
             </section>
 
-            <SwipeVoteCard
+            <NextLevelSwipeCard
               clip={clipA}
               videoRef={videoRefA}
               muted={mutedA}
@@ -208,7 +215,7 @@ export default function BattlePage() {
               </div>
             </div>
 
-            <SwipeVoteCard
+            <NextLevelSwipeCard
               clip={clipB}
               videoRef={videoRefB}
               muted={mutedB}
@@ -244,7 +251,7 @@ export default function BattlePage() {
               </div>
 
               <p className="mt-4 text-center text-xs text-zinc-500 sm:text-sm">
-                Swipe auf einer Karte nach rechts, um für diesen Clip zu voten.
+                {t("swipeHint")}
               </p>
             </section>
           </div>
@@ -254,7 +261,7 @@ export default function BattlePage() {
   );
 }
 
-type SwipeVoteCardProps = {
+type SwipeCardProps = {
   clip: Clip;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   muted: boolean;
@@ -267,7 +274,7 @@ type SwipeVoteCardProps = {
   t: (key: string, values?: Record<string, string | number>) => string;
 };
 
-function SwipeVoteCard({
+function NextLevelSwipeCard({
   clip,
   videoRef,
   muted,
@@ -278,15 +285,17 @@ function SwipeVoteCard({
   voting,
   color,
   t
-}: SwipeVoteCardProps) {
+}: SwipeCardProps) {
   const username = clip.username || t("unknownUser");
 
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [voteBurst, setVoteBurst] = useState(false);
   const startXRef = useRef<number | null>(null);
 
-  const threshold = 110;
-  const swipeProgress = Math.min(dragX / threshold, 1);
+  const threshold = 120;
+  const progress = Math.min(dragX / threshold, 1);
+  const reached = dragX >= threshold;
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (voting) return;
@@ -300,21 +309,23 @@ function SwipeVoteCard({
     const currentX = e.touches[0].clientX;
     const diff = currentX - startXRef.current;
 
-    if (diff > 0) {
-      setDragX(diff);
-    } else {
-      setDragX(0);
-    }
+    setDragX(diff > 0 ? diff : 0);
   };
 
   const handleTouchEnd = () => {
     if (voting) return;
 
-    if (dragX > threshold) {
-      setDragX(0);
+    if (dragX >= threshold) {
+      setVoteBurst(true);
+      setDragX(220);
       setDragging(false);
       startXRef.current = null;
-      onVote();
+
+      setTimeout(() => {
+        onVote();
+        setVoteBurst(false);
+        setDragX(0);
+      }, 180);
       return;
     }
 
@@ -334,7 +345,7 @@ function SwipeVoteCard({
       <div
         className="transition-transform duration-150 ease-out"
         style={{
-          transform: `translateX(${dragX}px) rotate(${dragX * 0.025}deg) scale(${dragging ? 1.01 : 1})`
+          transform: `translateX(${dragX}px) rotate(${dragX * 0.03}deg) scale(${dragging ? 1.015 : 1})`
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -353,32 +364,42 @@ function SwipeVoteCard({
 
           <div className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${color} opacity-25`} />
 
-          {/* Swipe overlay */}
           <div
             className="pointer-events-none absolute inset-y-0 left-0 z-10 bg-emerald-500/25 backdrop-blur-[1px] transition-all duration-75"
-            style={{width: `${swipeProgress * 100}%`}}
+            style={{width: `${progress * 100}%`}}
           />
 
-          {/* Vote badge */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10 transition"
+            style={{
+              boxShadow: reached
+                ? "inset 0 0 0 9999px rgba(16,185,129,0.12)"
+                : "none"
+            }}
+          />
+
           <div className="pointer-events-none absolute left-4 top-1/2 z-20 -translate-y-1/2">
             <div
-              className={`flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 shadow-xl transition ${
-                dragX > 10 ? "opacity-100 scale-100" : "opacity-0 scale-90"
-              }`}
+              className="flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 shadow-xl transition-all duration-150"
+              style={{
+                opacity: progress > 0.08 ? 1 : 0,
+                transform: `scale(${0.88 + progress * 0.22})`
+              }}
             >
-              <Check size={16} />
-              VOTE
+              {reached ? <Check size={16} /> : <ArrowRight size={16} />}
+              {t("voteBadge")}
             </div>
           </div>
 
-          {/* Swipe text */}
           <div className="pointer-events-none absolute bottom-4 right-4 z-20">
             <div
-              className={`rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-xs font-medium text-white/85 backdrop-blur transition ${
-                dragX > 10 ? "opacity-0" : "opacity-100"
-              }`}
+              className="rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-xs font-medium text-white/85 backdrop-blur transition-all duration-150"
+              style={{
+                opacity: progress > 0.12 ? 0 : 1,
+                transform: `translateX(${-progress * 20}px)`
+              }}
             >
-              → Swipe to vote
+              → {t("swipeToVote")}
             </div>
           </div>
 
@@ -390,8 +411,19 @@ function SwipeVoteCard({
             {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
 
+          {voteBurst && (
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+              <div className="rounded-full border border-emerald-300/30 bg-emerald-500/25 px-6 py-4 text-lg font-bold text-emerald-100 shadow-2xl backdrop-blur-md animate-pulse">
+                <span className="inline-flex items-center gap-2">
+                  <Check size={20} />
+                  {t("voteBadge")}
+                </span>
+              </div>
+            </div>
+          )}
+
           {isWinner && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[1px]">
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[1px]">
               <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-2xl sm:text-base">
                 <span className="inline-flex items-center gap-2">
                   <Trophy size={18} />
