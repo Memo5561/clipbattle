@@ -172,17 +172,17 @@ export default function BattlePage() {
             <p className="max-w-xl text-zinc-400">{t("notEnoughText")}</p>
           </section>
         ) : (
-          <div className="mx-auto max-w-7xl space-y-4">
-            <section className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 sm:px-5">
-              <div>
-                <p className="text-xs text-zinc-500">{t("badge")}</p>
-                <h1 className="text-lg font-bold sm:text-xl">{t("title")}</h1>
+          <div className="mx-auto max-w-7xl space-y-3">
+            <section className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900/80 px-4 py-3">
+              <div className="min-w-0">
+                <p className="text-[11px] text-zinc-500 sm:text-xs">{t("badge")}</p>
+                <h1 className="text-xl font-bold sm:text-2xl">{t("title")}</h1>
               </div>
 
               <button
                 onClick={() => generateBattlePair(clips)}
                 disabled={voting}
-                className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
+                className="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60"
               >
                 <RefreshCw size={16} />
                 {t("newRound")}
@@ -190,7 +190,7 @@ export default function BattlePage() {
             </section>
 
             <section className="relative overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-950">
-              <div className="grid h-[calc(100vh-120px)] grid-cols-2 sm:h-[80vh]">
+              <div className="grid h-[calc(100dvh-250px)] min-h-[560px] grid-cols-2 sm:h-[calc(100dvh-220px)]">
                 <SplitSide
                   clip={clipA}
                   videoRef={videoRefA}
@@ -200,7 +200,6 @@ export default function BattlePage() {
                   isWinner={winnerId === clipA.id}
                   isLoser={!!winnerId && winnerId !== clipA.id}
                   align="left"
-                  accent="from-purple-500/20 via-purple-900/10 to-transparent"
                   voting={voting}
                   t={t}
                 />
@@ -214,7 +213,6 @@ export default function BattlePage() {
                   isWinner={winnerId === clipB.id}
                   isLoser={!!winnerId && winnerId !== clipB.id}
                   align="right"
-                  accent="from-blue-500/20 via-blue-900/10 to-transparent"
                   voting={voting}
                   t={t}
                 />
@@ -223,13 +221,13 @@ export default function BattlePage() {
               <div className="pointer-events-none absolute inset-y-0 left-1/2 z-20 w-px -translate-x-1/2 bg-white/15" />
 
               <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
-                <div className="rounded-full border border-white/20 bg-black/70 px-4 py-3 text-sm font-bold tracking-[0.3em] text-white shadow-2xl backdrop-blur">
+                <div className="rounded-full border border-white/15 bg-black/70 px-4 py-3 text-sm font-bold tracking-[0.35em] text-white shadow-2xl backdrop-blur">
                   VS
                 </div>
               </div>
             </section>
 
-            <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-4 sm:p-5">
+            <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-4">
               <div className="mb-3 flex items-center justify-between text-xs text-zinc-400 sm:text-sm">
                 <span>{clipA.username || t("unknownUser")}</span>
                 <span>{clipB.username || t("unknownUser")}</span>
@@ -250,10 +248,6 @@ export default function BattlePage() {
                   {clipB.votes || 0} {t("votes")}
                 </span>
               </div>
-
-              <p className="mt-4 text-center text-xs text-zinc-500 sm:text-sm">
-                {t("subtitle")}
-              </p>
             </section>
           </div>
         )}
@@ -271,7 +265,6 @@ type SplitSideProps = {
   isWinner: boolean;
   isLoser: boolean;
   align: "left" | "right";
-  accent: string;
   voting: boolean;
   t: (key: string, values?: Record<string, string | number>) => string;
 };
@@ -285,7 +278,6 @@ function SplitSide({
   isWinner,
   isLoser,
   align,
-  accent,
   voting,
   t
 }: SplitSideProps) {
@@ -297,7 +289,7 @@ function SplitSide({
       onClick={onVote}
       disabled={voting}
       className={`group relative h-full w-full overflow-hidden text-left transition duration-300 ${
-        isWinner ? "scale-[1.05] brightness-110" : ""
+        isWinner ? "scale-[1.03] brightness-110" : ""
       } ${isLoser ? "opacity-60" : "opacity-100"} disabled:cursor-default`}
     >
       <video
@@ -307,15 +299,24 @@ function SplitSide({
         loop
         muted={muted}
         playsInline
-        className="absolute inset-0 h-full w-full object-cover"
+        className={`absolute inset-0 h-full w-full object-cover ${
+          align === "left" ? "object-[35%_center]" : "object-[65%_center]"
+        } scale-[1.45] sm:scale-[1.25]`}
       />
 
-      <div className={`absolute inset-0 bg-gradient-to-b ${accent}`} />
-      <div className="absolute inset-0 bg-black/20 transition group-hover:bg-black/10" />
+      <div
+        className={`absolute inset-0 ${
+          align === "left"
+            ? "bg-gradient-to-b from-purple-700/25 via-black/10 to-black/45"
+            : "bg-gradient-to-b from-blue-700/25 via-black/10 to-black/45"
+        }`}
+      />
+
+      <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/0" />
 
       {isWinner && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[2px]">
-          <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-2xl sm:text-base">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-500/15 backdrop-blur-[1px]">
+          <div className="rounded-full border border-emerald-300/30 bg-emerald-500/20 px-4 py-3 text-sm font-semibold text-emerald-200 shadow-2xl">
             <span className="inline-flex items-center gap-2">
               <Trophy size={18} />
               {t("winner")}
@@ -342,22 +343,22 @@ function SplitSide({
           align === "left" ? "right-3 text-right" : "left-3 text-left"
         }`}
       >
-        <div className="rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-[11px] font-medium text-white/85 backdrop-blur sm:text-xs">
+        <div className="rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-[11px] font-medium text-white/90 backdrop-blur sm:text-xs">
           {clip.username ? t("voteFor", {username}) : t("voteForClip")}
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 p-3 sm:p-4">
+      <div className="absolute inset-x-0 bottom-0 z-20 p-3">
         <div className="rounded-2xl border border-white/10 bg-black/50 p-3 shadow-xl backdrop-blur-lg">
-          <h2 className="line-clamp-2 text-sm font-bold text-white sm:text-lg">
+          <h2 className="line-clamp-2 text-lg font-bold text-white">
             {clip.title}
           </h2>
 
-          <p className="mt-1 line-clamp-1 text-xs text-zinc-300 sm:text-sm">
+          <p className="mt-1 line-clamp-1 text-sm text-zinc-300">
             {clip.game}
           </p>
 
-          <div className="mt-2 flex flex-col gap-1 text-[11px] text-zinc-300 sm:text-xs">
+          <div className="mt-2 flex flex-col gap-1 text-xs text-zinc-300">
             <span>
               {t("postedBy")}: {username}
             </span>
