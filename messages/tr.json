@@ -151,5 +151,17 @@
     "notLoggedIn": "Giriş yapılmadı",
     "deleteSuccess": "Hesap silindi",
     "deleteError": "Hata"
+  },
+
+  "Profile": {
+    "profile": "Profil",
+    "loading": "Yükleniyor...",
+    "clips": "Klip",
+    "totalVotes": "Toplam oy",
+    "creator": "Creator",
+    "empty": "Bu kullanıcının henüz klibi yok.",
+    "backToFeed": "Akışa dön",
+    "unknownGame": "Bilinmiyor",
+    "votes": "Oy"
   }
 }
