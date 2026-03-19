@@ -68,8 +68,9 @@ function MobileNavItem({
 export default function Navbar() {
   const t = useTranslations("Navbar");
   const router = useRouter();
+  const pathname = usePathname();
 
-  const [username, setUsername] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [menuOpenDesktop, setMenuOpenDesktop] = useState(false);
   const [menuOpenMobile, setMenuOpenMobile] = useState(false);
 
@@ -85,12 +86,16 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
+    let mounted = true;
+
     const loadUser = async () => {
       const {
         data: {user}
       } = await supabase.auth.getUser();
 
-      setUsername(user?.user_metadata?.username ?? user?.email ?? null);
+      if (!mounted) return;
+
+      setDisplayName(user?.user_metadata?.username ?? user?.email ?? null);
     };
 
     loadUser();
@@ -98,15 +103,23 @@ export default function Navbar() {
     const {
       data: {subscription}
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUsername(
+      if (!mounted) return;
+
+      setDisplayName(
         session?.user?.user_metadata?.username ?? session?.user?.email ?? null
       );
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    setMenuOpenDesktop(false);
+    setMenuOpenMobile(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -142,8 +155,8 @@ export default function Navbar() {
 
     setMenuOpenDesktop(false);
     setMenuOpenMobile(false);
-    setUsername(null);
-    router.push("/");
+    setDisplayName(null);
+    router.replace("/");
     router.refresh();
   };
 
@@ -160,6 +173,12 @@ export default function Navbar() {
     router.push("/account");
     router.refresh();
   };
+
+  const mobileLabel = displayName?.includes("@")
+    ? displayName
+    : displayName
+      ? `@${displayName}`
+      : null;
 
   return (
     <>
@@ -182,19 +201,23 @@ export default function Navbar() {
 
           <nav className="hidden flex-wrap items-center gap-2 md:flex">
             {desktopNavLinks.map((link) => (
-              <DesktopNavLink key={link.href} href={link.href} label={link.label} />
+              <DesktopNavLink
+                key={link.href}
+                href={link.href}
+                label={link.label}
+              />
             ))}
 
             <LanguageSwitcher />
 
-            {username ? (
+            {displayName ? (
               <div className="relative" ref={desktopMenuRef}>
                 <button
                   type="button"
                   onClick={() => setMenuOpenDesktop((prev) => !prev)}
                   className="rounded-xl border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-500/20"
                 >
-                  👤 {username}
+                  👤 {displayName}
                 </button>
 
                 {menuOpenDesktop && (
@@ -233,7 +256,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher />
 
-            {username ? (
+            {displayName ? (
               <div className="relative" ref={mobileMenuRef}>
                 <button
                   type="button"
@@ -244,9 +267,9 @@ export default function Navbar() {
                 </button>
 
                 {menuOpenMobile && (
-                  <div className="absolute right-0 mt-2 w-44 rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl">
+                  <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl">
                     <div className="mb-1 rounded-xl px-4 py-2 text-sm text-zinc-400">
-                      @{username}
+                      {mobileLabel}
                     </div>
 
                     <button
