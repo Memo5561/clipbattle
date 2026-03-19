@@ -95,7 +95,7 @@ export default function Navbar() {
 
       if (!mounted) return;
 
-      setDisplayName(user?.user_metadata?.username ?? user?.email ?? null);
+      setDisplayName(user?.user_metadata?.username ?? "User");
     };
 
     loadUser();
@@ -106,7 +106,7 @@ export default function Navbar() {
       if (!mounted) return;
 
       setDisplayName(
-        session?.user?.user_metadata?.username ?? session?.user?.email ?? null
+        session?.user?.user_metadata?.username ?? "User"
       );
     });
 
@@ -174,11 +174,7 @@ export default function Navbar() {
     router.refresh();
   };
 
-  const mobileLabel = displayName?.includes("@")
-    ? displayName
-    : displayName
-      ? `@${displayName}`
-      : null;
+  const mobileLabel = displayName ? `@${displayName}` : null;
 
   return (
     <>
@@ -201,11 +197,7 @@ export default function Navbar() {
 
           <nav className="hidden flex-wrap items-center gap-2 md:flex">
             {desktopNavLinks.map((link) => (
-              <DesktopNavLink
-                key={link.href}
-                href={link.href}
-                label={link.label}
-              />
+              <DesktopNavLink key={link.href} {...link} />
             ))}
 
             <LanguageSwitcher />
@@ -223,25 +215,22 @@ export default function Navbar() {
                 {menuOpenDesktop && (
                   <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl">
                     <button
-                      type="button"
                       onClick={handleGoToAccount}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
                     >
                       {t("accountInfo")}
                     </button>
 
                     <button
-                      type="button"
                       onClick={handleGoToMyClips}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
                     >
                       {t("myClips")}
                     </button>
 
                     <button
-                      type="button"
                       onClick={handleLogout}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-red-400 transition hover:bg-zinc-900 hover:text-red-300"
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-red-400 hover:bg-zinc-900 hover:text-red-300"
                     >
                       {t("logout")}
                     </button>
@@ -273,25 +262,22 @@ export default function Navbar() {
                     </div>
 
                     <button
-                      type="button"
                       onClick={handleGoToAccount}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
                     >
                       {t("accountInfo")}
                     </button>
 
                     <button
-                      type="button"
                       onClick={handleGoToMyClips}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
                     >
                       {t("myClips")}
                     </button>
 
                     <button
-                      type="button"
                       onClick={handleLogout}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-red-400 transition hover:bg-zinc-900 hover:text-red-300"
+                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-red-400 hover:bg-zinc-900 hover:text-red-300"
                     >
                       {t("logout")}
                     </button>
@@ -312,31 +298,11 @@ export default function Navbar() {
 
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-800 bg-black/90 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-md items-center gap-1 rounded-3xl border border-zinc-800 bg-zinc-900/80 p-1.5 shadow-2xl">
-          <MobileNavItem
-            href="/"
-            label={t("home")}
-            icon={<House size={18} />}
-          />
-          <MobileNavItem
-            href="/upload"
-            label={t("upload")}
-            icon={<Upload size={18} />}
-          />
-          <MobileNavItem
-            href="/feed"
-            label={t("feed")}
-            icon={<Clapperboard size={18} />}
-          />
-          <MobileNavItem
-            href="/battle"
-            label={t("battle")}
-            icon={<Swords size={18} />}
-          />
-          <MobileNavItem
-            href="/leaderboard"
-            label={t("leaderboard")}
-            icon={<Trophy size={18} />}
-          />
+          <MobileNavItem href="/" label={t("home")} icon={<House size={18} />} />
+          <MobileNavItem href="/upload" label={t("upload")} icon={<Upload size={18} />} />
+          <MobileNavItem href="/feed" label={t("feed")} icon={<Clapperboard size={18} />} />
+          <MobileNavItem href="/battle" label={t("battle")} icon={<Swords size={18} />} />
+          <MobileNavItem href="/leaderboard" label={t("leaderboard")} icon={<Trophy size={18} />} />
         </div>
       </nav>
     </>
