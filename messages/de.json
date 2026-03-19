@@ -42,16 +42,18 @@
   },
 
   "Battle": {
-    "badge": "⚔️ Battle Arena",
-    "title": "Zwei Clips. Eine Entscheidung.",
-    "subtitle": "Schau und vote.",
-    "newRound": "Neue Runde",
-    "loading": "Lade Battle...",
-    "loadError": "Fehler beim Laden.",
-    "emptyState": "Nicht genug Clips vorhanden.",
-    "unknownUser": "Unbekannt",
-    "voteError": "Fehler beim Voten: "
-  },
+  "badge": "⚔️ Battle Arena",
+  "title": "Zwei Clips. Eine Entscheidung.",
+  "subtitle": "Schau und vote.",
+  "newRound": "Neue Runde",
+  "newRoundShort": "Neue Runde",
+  "pageTitle": "Battle",
+  "loading": "Lade Battle...",
+  "loadError": "Fehler beim Laden.",
+  "emptyState": "Nicht genug Clips vorhanden.",
+  "unknownUser": "Unbekannt",
+  "voteError": "Fehler beim Voten: "
+},
 
   "Upload": {
     "badge": "🎥 Upload deinen Clip",
