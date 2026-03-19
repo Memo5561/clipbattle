@@ -65,10 +65,10 @@ export default function AuthPage() {
       return;
     }
 
-    // Optional: falls du eine profiles-Tabelle nutzt
     const {error: profileError} = await supabase.from("profiles").upsert({
       id: user.id,
-      username: cleanUsername
+      username: cleanUsername,
+      email: email
     });
 
     setLoading(false);
