@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabase";
+import {useEffect, useState} from "react";
+import {useTranslations} from "next-intl";
+import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
 
 export default function AccountPage() {
+  const t = useTranslations("Account");
+
   const [username, setUsername] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +16,7 @@ export default function AccountPage() {
   useEffect(() => {
     const loadUser = async () => {
       const {
-        data: { user }
+        data: {user}
       } = await supabase.auth.getUser();
 
       setUsername(user?.user_metadata?.username ?? null);
@@ -25,9 +28,7 @@ export default function AccountPage() {
   }, []);
 
   const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(
-      "Willst du dein Konto wirklich dauerhaft löschen? Dieser Schritt kann nicht rückgängig gemacht werden."
-    );
+    const confirmed = window.confirm(t("confirmDelete"));
 
     if (!confirmed) return;
 
@@ -35,11 +36,11 @@ export default function AccountPage() {
 
     try {
       const {
-        data: { session }
+        data: {session}
       } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        alert("Nicht eingeloggt");
+        alert(t("notLoggedIn"));
         setLoadingDelete(false);
         return;
       }
@@ -58,18 +59,18 @@ export default function AccountPage() {
       const data = await res.json().catch(() => null);
 
       if (!res.ok) {
-        alert(`Fehler: ${res.status} - ${data?.error || "Unbekannt"}`);
+        alert(`${t("deleteError")}: ${data?.error || "Unknown error"}`);
         setLoadingDelete(false);
         return;
       }
 
-      alert("Konto erfolgreich gelöscht");
+      alert(t("deleteSuccess"));
 
       await supabase.auth.signOut();
       window.location.href = "/";
     } catch (error) {
       console.error(error);
-      alert("Fehler beim Löschen");
+      alert(t("deleteError"));
       setLoadingDelete(false);
     }
   };
@@ -79,32 +80,32 @@ export default function AccountPage() {
       <div className="min-h-screen bg-black px-4 py-10 text-white">
         <div className="mx-auto max-w-md space-y-6">
           <div className="rounded-2xl bg-zinc-900 p-5 shadow-xl">
-            <p className="text-sm text-zinc-400">Account</p>
-            <h1 className="text-3xl font-bold">Kontoinformationen</h1>
+            <p className="text-sm text-zinc-400">{t("section")}</p>
+            <h1 className="text-3xl font-bold">{t("title")}</h1>
           </div>
 
           {loading ? (
             <div className="rounded-2xl bg-zinc-900 p-5">
-              <p className="text-zinc-400">Lädt...</p>
+              <p className="text-zinc-400">{t("loading")}</p>
             </div>
           ) : (
             <>
               <div className="rounded-2xl bg-zinc-900 p-5">
-                <p className="text-sm text-zinc-400">Username</p>
+                <p className="text-sm text-zinc-400">{t("username")}</p>
                 <p className="text-lg font-semibold">{username ?? "—"}</p>
               </div>
 
               <div className="rounded-2xl bg-zinc-900 p-5">
-                <p className="text-sm text-zinc-400">E-Mail</p>
+                <p className="text-sm text-zinc-400">{t("email")}</p>
                 <p className="break-all text-lg font-semibold">{email ?? "—"}</p>
               </div>
 
               <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-5">
                 <h2 className="mb-2 font-semibold text-red-400">
-                  Konto löschen
+                  {t("deleteTitle")}
                 </h2>
                 <p className="mb-4 text-sm text-red-300">
-                  Dein Konto und alle Daten werden dauerhaft gelöscht.
+                  {t("deleteText")}
                 </p>
 
                 <button
@@ -113,7 +114,7 @@ export default function AccountPage() {
                   disabled={loadingDelete}
                   className="w-full rounded-xl bg-gradient-to-r from-red-500 to-orange-500 px-4 py-3 font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
                 >
-                  {loadingDelete ? "Wird gelöscht..." : "Konto löschen"}
+                  {loadingDelete ? t("deleting") : t("deleteButton")}
                 </button>
               </div>
             </>
