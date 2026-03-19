@@ -1,17 +1,36 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslations} from "next-intl";
-import {Link} from "../../../i18n/navigation";
+import {Link, useRouter} from "../../../i18n/navigation";
 import {supabase} from "../../../lib/supabase";
 
 export default function UploadPage() {
   const t = useTranslations("Upload");
+  const router = useRouter();
 
   const [title, setTitle] = useState("");
   const [game, setGame] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: {user}
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/auth");
+        return;
+      }
+
+      setCheckingAuth(false);
+    };
+
+    checkUser();
+  }, [router]);
 
   const handleUpload = async () => {
     if (!title || !game || !file) {
@@ -25,12 +44,10 @@ export default function UploadPage() {
       data: {user}
     } = await supabase.auth.getUser();
 
-    console.log("USER:", user);
-    console.log("USERNAME:", user?.user_metadata?.username);
-
     if (!user) {
       alert(t("alertLogin"));
       setLoading(false);
+      router.push("/auth");
       return;
     }
 
@@ -59,7 +76,7 @@ export default function UploadPage() {
       video_url: videoUrl,
       votes: 0,
       user_id: user.id,
-      username: username
+      username
     });
 
     if (insertError) {
@@ -75,6 +92,14 @@ export default function UploadPage() {
     setFile(null);
     setLoading(false);
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        {t("buttonLoading")}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-white">
