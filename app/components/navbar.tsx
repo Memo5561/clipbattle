@@ -227,7 +227,7 @@ export default function Navbar() {
                       onClick={handleGoToAccount}
                       className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
-                      Kontoinformationen
+                      {t("accountInfo")}
                     </button>
 
                     <button
@@ -277,7 +277,7 @@ export default function Navbar() {
                       onClick={handleGoToAccount}
                       className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
-                      Kontoinformationen
+                      {t("accountInfo")}
                     </button>
 
                     <button
