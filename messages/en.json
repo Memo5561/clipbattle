@@ -11,6 +11,22 @@
     "tagline": "Gaming Clips • Battles • Rankings",
     "accountInfo": "Account information"
   },
+
+  "Home": {
+    "eyebrow": "Gaming Clips • Battles • Rankings",
+    "titleA": "Welcome to",
+    "titleB": "ClipBattle",
+    "subtitle": "Upload your best clips, compete and show who has the best moment.",
+    "battle": "Start battle",
+    "upload": "Upload clip",
+    "stat1Label": "Battles",
+    "stat1Value": "24/7",
+    "stat2Label": "Community",
+    "stat2Value": "Active",
+    "stat3Label": "Goal",
+    "stat3Value": "Top Clip"
+  },
+
   "Feed": {
     "badge": "🔥 Community Feed",
     "title": "All clips",
@@ -24,6 +40,7 @@
     "gameFallback": "Unknown game",
     "unknownUser": "Unknown"
   },
+
   "Battle": {
     "badge": "⚔️ Battle Arena",
     "title": "Two clips. One decision.",
@@ -36,11 +53,13 @@
     "emptyState": "Not enough clips available.",
     "unknownUser": "Unknown"
   },
+
   "Leaderboard": {
     "loading": "Loading leaderboard...",
     "loadError": "Leaderboard could not be loaded.",
     "empty": "No clips yet."
   },
+
   "Account": {
     "section": "Account",
     "title": "Account information",
