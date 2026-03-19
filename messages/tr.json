@@ -13,107 +13,104 @@
   },
 
   "Home": {
-  "eyebrow": "Oyun Klipleri • Düellolar • Sıralamalar",
-  "titleA": "Hoş geldin",
-  "titleB": "ClipBattle",
-  "subtitle": "En iyi kliplerini yükle ve yarış.",
+    "eyebrow": "Oyun Klipleri • Düellolar • Sıralamalar",
+    "titleA": "Hoş geldin",
+    "titleB": "ClipBattle",
+    "subtitle": "Kliplerini yükle ve yarış.",
 
-  "battle": "Battle başlat",
-  "upload": "Klip yükle",
+    "battle": "Başlat",
+    "upload": "Yükle",
 
-  "stat1Label": "Battle",
-  "stat1Value": "7/24",
-  "stat2Label": "Topluluk",
-  "stat2Value": "Aktif",
-  "stat3Label": "Hedef",
-  "stat3Value": "Top Klip",
+    "stat1Label": "Battle",
+    "stat1Value": "7/24",
+    "stat2Label": "Topluluk",
+    "stat2Value": "Aktif",
+    "stat3Label": "Hedef",
+    "stat3Value": "Top Klip",
 
-  "previewBadge": "Battle Önizleme",
-  "previewTitle": "ClipBattle hissi",
-  "previewLive": "Canlı",
+    "previewBadge": "Önizleme",
+    "previewTitle": "Deneyim",
+    "previewLive": "Canlı",
 
-  "clipATitle": "Epic Sniper Flick",
-  "clipAGame": "Fortnite",
-  "clipAUser": "Paylaşan: PlayerOne",
+    "clipATitle": "Sniper",
+    "clipAGame": "Fortnite",
+    "clipAUser": "PlayerOne",
 
-  "clipBTitle": "Insane Clutch",
-  "clipBGame": "Warzone",
-  "clipBUser": "Paylaşan: King55",
+    "clipBTitle": "Clutch",
+    "clipBGame": "Warzone",
+    "clipBUser": "King55",
 
-  "previewLeft": "%58 Klip A",
-  "previewRight": "%42 Klip B",
+    "previewLeft": "%58",
+    "previewRight": "%42",
 
-  "whyBadge": "Neden?",
-  "whyTitle": "Sıradan değil",
+    "whyBadge": "Neden",
+    "whyTitle": "Daha fazlası",
 
-  "why1Title": "Karşılaştırma",
-  "why1Text": "Klipler karşılaştırılır.",
+    "why1Title": "Karşılaştır",
+    "why1Text": "Klipler yarışır.",
 
-  "why2Title": "Sıralama",
-  "why2Text": "Yüksel.",
+    "why2Title": "Sıralama",
+    "why2Text": "Yüksel.",
 
-  "why3Title": "Topluluk",
-  "why3Text": "Daha fazla etkileşim.",
+    "why3Title": "Topluluk",
+    "why3Text": "Etkileşim.",
 
-  "featuresBadge": "Özellikler",
-  "featuresTitle": "İhtiyacın olan her şey",
+    "featuresBadge": "Özellikler",
+    "featuresTitle": "Hepsi",
 
-  "feature1Title": "Yükle",
-  "feature1Text": "Klip paylaş.",
+    "feature1Title": "Yükle",
+    "feature1Text": "Paylaş.",
 
-  "feature2Title": "Battle",
-  "feature2Text": "Düello yap.",
+    "feature2Title": "Battle",
+    "feature2Text": "Yarış.",
 
-  "feature3Title": "Sıralama",
-  "feature3Text": "En iyi ol."
-}
+    "feature3Title": "Sıralama",
+    "feature3Text": "Kazan."
+  },
 
   "Feed": {
-    "badge": "🔥 Topluluk Akışı",
-    "title": "Tüm klipler",
-    "subtitle": "En yeni klipleri keşfet.",
-    "loading": "Klipler yükleniyor...",
-    "empty": "Henüz klip yok.",
-    "emptyTitle": "Henüz klip yok",
-    "emptyText": "Klipler burada görünecek.",
+    "badge": "🔥 Akış",
+    "title": "Klipler",
+    "subtitle": "Keşfet.",
+    "loading": "Yükleniyor...",
+    "empty": "Yok.",
     "postedBy": "Paylaşan",
     "votes": "Oy",
-    "gameFallback": "Bilinmeyen oyun",
-    "unknownUser": "Bilinmiyor"
+    "unknownUser": "Bilinmiyor",
+    "gameFallback": "Bilinmiyor"
   },
 
   "Battle": {
-    "badge": "⚔️ Battle Arenası",
-    "title": "İki klip. Tek karar.",
-    "subtitle": "İzle ve oy ver.",
-    "newRound": "Yeni tur",
-    "newRoundShort": "Yeni tur",
+    "badge": "⚔️ Arena",
+    "title": "İki klip",
+    "subtitle": "Oy ver.",
+    "newRound": "Yeni",
+    "newRoundShort": "Yeni",
     "pageTitle": "Battle",
-    "loading": "Battle yükleniyor...",
-    "loadError": "Battle yüklenemedi.",
-    "emptyState": "Yeterli klip yok.",
+    "loading": "Yükleniyor...",
+    "loadError": "Hata",
+    "emptyState": "Yetersiz",
     "unknownUser": "Bilinmiyor"
   },
 
   "Leaderboard": {
-    "loading": "Sıralama yükleniyor...",
-    "loadError": "Sıralama yüklenemedi.",
-    "empty": "Henüz klip yok."
+    "loading": "Yükleniyor...",
+    "empty": "Yok."
   },
 
   "Account": {
     "section": "Hesap",
     "title": "Hesap bilgileri",
     "loading": "Yükleniyor...",
-    "username": "Kullanıcı adı",
+    "username": "Kullanıcı",
     "email": "E-posta",
-    "deleteTitle": "Hesabı sil",
-    "deleteText": "Hesabın kalıcı olarak silinecek.",
-    "deleteButton": "Hesabı sil",
+    "deleteTitle": "Sil",
+    "deleteText": "Hesap silinir.",
+    "deleteButton": "Sil",
     "deleting": "Siliniyor...",
-    "confirmDelete": "Hesabını silmek istiyor musun?",
-    "notLoggedIn": "Giriş yapılmadı",
-    "deleteSuccess": "Hesap silindi",
-    "deleteError": "Silme hatası"
+    "confirmDelete": "Silmek istiyor musun?",
+    "notLoggedIn": "Giriş yok",
+    "deleteSuccess": "Silindi",
+    "deleteError": "Hata"
   }
 }
