@@ -13,19 +13,60 @@
   },
 
   "Home": {
-    "eyebrow": "Oyun Klipleri • Düellolar • Sıralamalar",
-    "titleA": "Hoş geldin",
-    "titleB": "ClipBattle",
-    "subtitle": "En iyi kliplerini yükle ve diğerleriyle yarış.",
-    "battle": "Battle başlat",
-    "upload": "Klip yükle",
-    "stat1Label": "Battle",
-    "stat1Value": "7/24",
-    "stat2Label": "Topluluk",
-    "stat2Value": "Aktif",
-    "stat3Label": "Hedef",
-    "stat3Value": "Top Klip"
-  },
+  "eyebrow": "Oyun Klipleri • Düellolar • Sıralamalar",
+  "titleA": "Hoş geldin",
+  "titleB": "ClipBattle",
+  "subtitle": "En iyi kliplerini yükle ve yarış.",
+
+  "battle": "Battle başlat",
+  "upload": "Klip yükle",
+
+  "stat1Label": "Battle",
+  "stat1Value": "7/24",
+  "stat2Label": "Topluluk",
+  "stat2Value": "Aktif",
+  "stat3Label": "Hedef",
+  "stat3Value": "Top Klip",
+
+  "previewBadge": "Battle Önizleme",
+  "previewTitle": "ClipBattle hissi",
+  "previewLive": "Canlı",
+
+  "clipATitle": "Epic Sniper Flick",
+  "clipAGame": "Fortnite",
+  "clipAUser": "Paylaşan: PlayerOne",
+
+  "clipBTitle": "Insane Clutch",
+  "clipBGame": "Warzone",
+  "clipBUser": "Paylaşan: King55",
+
+  "previewLeft": "%58 Klip A",
+  "previewRight": "%42 Klip B",
+
+  "whyBadge": "Neden?",
+  "whyTitle": "Sıradan değil",
+
+  "why1Title": "Karşılaştırma",
+  "why1Text": "Klipler karşılaştırılır.",
+
+  "why2Title": "Sıralama",
+  "why2Text": "Yüksel.",
+
+  "why3Title": "Topluluk",
+  "why3Text": "Daha fazla etkileşim.",
+
+  "featuresBadge": "Özellikler",
+  "featuresTitle": "İhtiyacın olan her şey",
+
+  "feature1Title": "Yükle",
+  "feature1Text": "Klip paylaş.",
+
+  "feature2Title": "Battle",
+  "feature2Text": "Düello yap.",
+
+  "feature3Title": "Sıralama",
+  "feature3Text": "En iyi ol."
+}
 
   "Feed": {
     "badge": "🔥 Topluluk Akışı",
