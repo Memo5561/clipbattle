@@ -13,60 +13,46 @@
   },
 
   "Home": {
-    "eyebrow": "Oyun Klipleri • Düellolar • Sıralamalar",
-    "titleA": "Hoş geldin",
-    "titleB": "ClipBattle",
-    "subtitle": "Kliplerini yükle ve yarış.",
-
-    "battle": "Başlat",
-    "upload": "Yükle",
-
-    "stat1Label": "Battle",
-    "stat1Value": "7/24",
-    "stat2Label": "Topluluk",
-    "stat2Value": "Aktif",
-    "stat3Label": "Hedef",
-    "stat3Value": "Top Klip",
-
-    "previewBadge": "Önizleme",
-    "previewTitle": "Deneyim",
-    "previewLive": "Canlı",
-
-    "clipATitle": "Sniper",
-    "clipAGame": "Fortnite",
-    "clipAUser": "PlayerOne",
-
-    "clipBTitle": "Clutch",
-    "clipBGame": "Warzone",
-    "clipBUser": "King55",
-
-    "previewLeft": "%58",
-    "previewRight": "%42",
-
-    "whyBadge": "Neden",
-    "whyTitle": "Daha fazlası",
-
-    "why1Title": "Karşılaştır",
-    "why1Text": "Klipler yarışır.",
-
-    "why2Title": "Sıralama",
-    "why2Text": "Yüksel.",
-
-    "why3Title": "Topluluk",
-    "why3Text": "Etkileşim.",
-
-    "featuresBadge": "Özellikler",
-    "featuresTitle": "Hepsi",
-
-    "feature1Title": "Yükle",
-    "feature1Text": "Paylaş.",
-
-    "feature2Title": "Battle",
-    "feature2Text": "Yarış.",
-
-    "feature3Title": "Sıralama",
-    "feature3Text": "Kazan."
-  },
+  "eyebrow": "Oyun Klipleri • Düellolar • Sıralamalar",
+  "titleA": "ClipBattle'a",
+  "titleB": "hoş geldin",
+  "subtitle": "En iyi oyun kliplerini yükle, diğer içerik üreticileriyle doğrudan battle'larda yarış ve topluluğa en çılgın klibin kimde olduğunu göster.",
+  "battle": "Battle başlat",
+  "upload": "Klip yükle",
+  "stat1Label": "Battle",
+  "stat1Value": "7/24",
+  "stat2Label": "Topluluk",
+  "stat2Value": "Aktif",
+  "stat3Label": "Hedef",
+  "stat3Value": "Top Klip",
+  "previewBadge": "Battle Önizleme",
+  "previewTitle": "ClipBattle böyle hissettirir",
+  "previewLive": "Canlı hissi",
+  "clipATitle": "Epic Sniper Flick",
+  "clipAGame": "Fortnite",
+  "clipAUser": "Paylaşan: PlayerOne",
+  "clipBTitle": "Insane Clutch Moment",
+  "clipBGame": "Warzone",
+  "clipBUser": "Paylaşan: King55",
+  "previewLeft": "%58 Klip A",
+  "previewRight": "%42 Klip B",
+  "whyBadge": "Neden ClipBattle?",
+  "whyTitle": "Sıradan bir akıştan fazlası",
+  "why1Title": "Creator vs Creator",
+  "why1Text": "Kliplerin sadece izlenmez, doğrudan diğerleriyle karşılaştırılır.",
+  "why2Title": "Sıralama ve görünürlük",
+  "why2Text": "Klibin ne kadar iyi performans gösterirse, sıralamada o kadar yükselirsin.",
+  "why3Title": "Daha güçlü topluluk",
+  "why3Text": "Battle'lar daha fazla etkileşim, daha fazla heyecan ve daha çok geri dönüş sağlar.",
+  "featuresBadge": "Özellikler",
+  "featuresTitle": "Viral klip battle'ları için ihtiyacın olan her şey",
+  "feature1Title": "Klip yükle",
+  "feature1Text": "En iyi oyun anlarını saniyeler içinde toplulukla paylaş.",
+  "feature2Title": "Doğrudan battle'lar",
+  "feature2Text": "İki klip karşı karşıya gelir — kararı topluluk verir.",
+  "feature3Title": "Sıralama",
+  "feature3Text": "En iyi klipler zirveye çıkar ve maksimum dikkat çeker."
+},
 
   "Feed": {
     "badge": "🔥 Akış",
