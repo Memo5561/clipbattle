@@ -83,9 +83,20 @@
 },
 
   "Leaderboard": {
-    "loading": "Leaderboard wird geladen...",
-    "empty": "Noch keine Clips vorhanden."
-  },
+  "badge": "🏆 Bestenliste",
+  "title": "Top Clips",
+  "subtitle": "Die erfolgreichsten Clips der Community nach Votes.",
+  "loading": "Leaderboard wird geladen...",
+  "loadError": "Leaderboard konnte nicht geladen werden.",
+  "empty": "Noch keine Clips im Leaderboard.",
+  "rank": "Rang",
+  "clip": "Clip",
+  "game": "Game",
+  "creator": "Creator",
+  "votes": "Votes",
+  "unknownUser": "Unbekannt",
+  "unknownGame": "Unbekannt"
+},
 
   "Account": {
     "section": "Account",
