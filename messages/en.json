@@ -55,16 +55,18 @@
 },
 
   "Feed": {
-    "badge": "🔥 Community Feed",
-    "title": "All clips",
-    "subtitle": "Discover clips.",
-    "loading": "Loading...",
-    "empty": "No clips.",
-    "postedBy": "Posted by",
-    "votes": "Votes",
-    "unknownUser": "Unknown",
-    "gameFallback": "Unknown"
-  },
+  "badge": "🔥 Community Feed",
+  "title": "All clips",
+  "subtitle": "Discover the newest and best gaming clips from the community.",
+  "loading": "Loading clips...",
+  "empty": "No clips available yet.",
+  "emptyTitle": "No clips yet",
+  "emptyText": "As soon as someone uploads something, clips will appear here.",
+  "postedBy": "Posted by",
+  "votes": "Votes",
+  "gameFallback": "Unknown game",
+  "unknownUser": "Unknown"
+},
 
   "Battle": {
     "badge": "⚔️ Battle Arena",
