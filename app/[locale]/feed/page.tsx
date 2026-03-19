@@ -2,6 +2,7 @@
 
 import {useCallback, useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
+import {Link} from "../../../i18n/navigation";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
 import FriendRequestButton from "../../components/friend-request-button";
@@ -336,9 +337,12 @@ export default function FeedPage() {
                   )}
 
                   <div className="mt-2 flex items-center gap-3">
-                    <p className="text-sm text-zinc-300">
+                    <Link
+                      href={`/profile/${clip.user_id}`}
+                      className="text-sm text-zinc-300 hover:underline"
+                    >
                       {clip.username || t("unknownUser")}
-                    </p>
+                    </Link>
 
                     {clip.user_id && (
                       <FriendRequestButton targetUserId={clip.user_id} />
