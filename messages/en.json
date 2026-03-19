@@ -115,5 +115,17 @@
     "notLoggedIn": "Not logged in",
     "deleteSuccess": "Deleted",
     "deleteError": "Error"
+  },
+
+  "Profile": {
+    "profile": "Profile",
+    "loading": "Loading...",
+    "clips": "Clips",
+    "totalVotes": "Total votes",
+    "creator": "Creator",
+    "empty": "This user has no clips yet.",
+    "backToFeed": "Back to feed",
+    "unknownGame": "Unknown",
+    "votes": "Votes"
   }
 }
