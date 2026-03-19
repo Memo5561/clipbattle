@@ -57,6 +57,8 @@
     "subtitle": "Topluluktaki en yeni ve en iyi oyun kliplerini keşfet.",
     "loading": "Klipler yükleniyor...",
     "empty": "Henüz klip yok.",
+    "emptyTitle": "Henüz klip yok",
+    "emptyText": "Biri bir şey yüklediği anda klipler burada görünecek.",
     "postedBy": "Paylaşan",
     "votes": "Oy",
     "gameFallback": "Bilinmeyen oyun",
@@ -80,7 +82,9 @@
     "unknownUser": "Bilinmiyor",
     "swipeToVote": "Oy vermek için sağa kaydır",
     "swipeHint": "Bu klibe oy vermek için kartı sağa kaydır.",
-    "voteBadge": "OY VER"
+    "voteBadge": "OY VER",
+    "loadError": "Battle şu anda yüklenemedi.",
+    "emptyState": "Battle için henüz yeterli klip yok."
   },
   "Upload": {
     "badge": "🎥 Klibini yükle",
@@ -106,6 +110,7 @@
     "title": "En iyi klipler",
     "subtitle": "Topluluktaki en başarılı klipler oy sayısına göre.",
     "loading": "Sıralama yükleniyor...",
+    "loadError": "Sıralama şu anda yüklenemedi.",
     "empty": "Henüz sıralamada klip yok.",
     "rank": "Sıra",
     "clip": "Klip",
