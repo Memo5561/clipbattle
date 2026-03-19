@@ -57,6 +57,8 @@
     "subtitle": "Discover the newest and best gaming clips from the community.",
     "loading": "Loading clips...",
     "empty": "No clips available yet.",
+    "emptyTitle": "No clips yet",
+    "emptyText": "As soon as someone uploads something, the clips will appear here.",
     "postedBy": "Posted by",
     "votes": "Votes",
     "gameFallback": "Unknown game",
@@ -80,7 +82,9 @@
     "unknownUser": "Unknown",
     "swipeToVote": "Swipe right to vote",
     "swipeHint": "Swipe right on a card to vote for this clip.",
-    "voteBadge": "VOTE"
+    "voteBadge": "VOTE",
+    "loadError": "Battle could not be loaded.",
+    "emptyState": "There are not enough clips for a battle yet."
   },
   "Upload": {
     "badge": "🎥 Upload your clip",
@@ -106,6 +110,7 @@
     "title": "Top clips",
     "subtitle": "The most successful clips in the community by votes.",
     "loading": "Loading leaderboard...",
+    "loadError": "The leaderboard could not be loaded right now.",
     "empty": "No clips in the leaderboard yet.",
     "rank": "Rank",
     "clip": "Clip",
