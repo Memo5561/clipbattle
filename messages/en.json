@@ -13,19 +13,60 @@
   },
 
   "Home": {
-    "eyebrow": "Gaming Clips • Battles • Rankings",
-    "titleA": "Welcome to",
-    "titleB": "ClipBattle",
-    "subtitle": "Upload your best clips, compete and show who has the best moment.",
-    "battle": "Start battle",
-    "upload": "Upload clip",
-    "stat1Label": "Battles",
-    "stat1Value": "24/7",
-    "stat2Label": "Community",
-    "stat2Value": "Active",
-    "stat3Label": "Goal",
-    "stat3Value": "Top Clip"
-  },
+  "eyebrow": "Gaming Clips • Battles • Rankings",
+  "titleA": "Welcome to",
+  "titleB": "ClipBattle",
+  "subtitle": "Upload your best clips and compete with others.",
+
+  "battle": "Start battle",
+  "upload": "Upload clip",
+
+  "stat1Label": "Battles",
+  "stat1Value": "24/7",
+  "stat2Label": "Community",
+  "stat2Value": "Active",
+  "stat3Label": "Goal",
+  "stat3Value": "Top Clip",
+
+  "previewBadge": "Battle Preview",
+  "previewTitle": "What ClipBattle feels like",
+  "previewLive": "Live feeling",
+
+  "clipATitle": "Epic Sniper Flick",
+  "clipAGame": "Fortnite",
+  "clipAUser": "Posted by: PlayerOne",
+
+  "clipBTitle": "Insane Clutch Moment",
+  "clipBGame": "Warzone",
+  "clipBUser": "Posted by: King55",
+
+  "previewLeft": "58% Clip A",
+  "previewRight": "42% Clip B",
+
+  "whyBadge": "Why ClipBattle?",
+  "whyTitle": "More than a feed",
+
+  "why1Title": "Creator vs Creator",
+  "why1Text": "Clips are compared directly.",
+
+  "why2Title": "Ranking",
+  "why2Text": "Climb the leaderboard.",
+
+  "why3Title": "Community",
+  "why3Text": "More engagement.",
+
+  "featuresBadge": "Features",
+  "featuresTitle": "Everything you need",
+
+  "feature1Title": "Upload",
+  "feature1Text": "Upload clips.",
+
+  "feature2Title": "Battles",
+  "feature2Text": "Direct duels.",
+
+  "feature3Title": "Leaderboard",
+  "feature3Text": "Top clips win."
+}
 
   "Feed": {
     "badge": "🔥 Community Feed",
