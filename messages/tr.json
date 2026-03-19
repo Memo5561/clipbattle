@@ -69,17 +69,18 @@
 },
 
   "Battle": {
-    "badge": "⚔️ Arena",
-    "title": "İki klip",
-    "subtitle": "Oy ver.",
-    "newRound": "Yeni",
-    "newRoundShort": "Yeni",
-    "pageTitle": "Battle",
-    "loading": "Yükleniyor...",
-    "loadError": "Hata",
-    "emptyState": "Yetersiz",
-    "unknownUser": "Bilinmiyor"
-  },
+  "badge": "⚔️ Arena",
+  "title": "İki klip. Tek karar.",
+  "subtitle": "İzle ve oy ver.",
+  "newRound": "Yeni tur",
+  "newRoundShort": "Yeni tur",
+  "pageTitle": "Battle",
+  "loading": "Battle yükleniyor...",
+  "loadError": "Battle şu anda yüklenemedi.",
+  "emptyState": "Battle için henüz yeterli klip yok.",
+  "unknownUser": "Bilinmiyor",
+  "voteError": "Oy verme hatası: "
+},
 
   "Leaderboard": {
     "loading": "Yükleniyor...",
