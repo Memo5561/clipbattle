@@ -13,60 +13,46 @@
   },
 
   "Home": {
-    "eyebrow": "Gaming Clips • Battles • Rankings",
-    "titleA": "Willkommen bei",
-    "titleB": "ClipBattle",
-    "subtitle": "Lade deine besten Gaming Clips hoch und tritt gegen andere Creator an.",
-
-    "battle": "Battle starten",
-    "upload": "Clip hochladen",
-
-    "stat1Label": "Battles",
-    "stat1Value": "24/7",
-    "stat2Label": "Community",
-    "stat2Value": "Aktiv",
-    "stat3Label": "Ziel",
-    "stat3Value": "Top Clip",
-
-    "previewBadge": "Battle Preview",
-    "previewTitle": "So fühlt sich ClipBattle an",
-    "previewLive": "Live Feeling",
-
-    "clipATitle": "Epic Sniper Flick",
-    "clipAGame": "Fortnite",
-    "clipAUser": "Gepostet von: PlayerOne",
-
-    "clipBTitle": "Insane Clutch Moment",
-    "clipBGame": "Warzone",
-    "clipBUser": "Gepostet von: King55",
-
-    "previewLeft": "58% Clip A",
-    "previewRight": "42% Clip B",
-
-    "whyBadge": "Warum ClipBattle?",
-    "whyTitle": "Mehr als nur ein Feed",
-
-    "why1Title": "Creator vs Creator",
-    "why1Text": "Clips werden direkt verglichen.",
-
-    "why2Title": "Ranking",
-    "why2Text": "Steige im Leaderboard.",
-
-    "why3Title": "Community",
-    "why3Text": "Mehr Interaktion.",
-
-    "featuresBadge": "Features",
-    "featuresTitle": "Alles was du brauchst",
-
-    "feature1Title": "Upload",
-    "feature1Text": "Lade Clips hoch.",
-
-    "feature2Title": "Battle",
-    "feature2Text": "Direkte Duelle.",
-
-    "feature3Title": "Leaderboard",
-    "feature3Text": "Top Clips gewinnen."
-  },
+  "eyebrow": "Gaming Clips • Battles • Rankings",
+  "titleA": "Willkommen bei",
+  "titleB": "ClipBattle",
+  "subtitle": "Lade deine besten Gaming Clips hoch, tritt gegen andere Creator an und zeig wer den krassesten Clip hat.",
+  "battle": "Battle starten",
+  "upload": "Clip hochladen",
+  "stat1Label": "Battles",
+  "stat1Value": "24/7",
+  "stat2Label": "Community",
+  "stat2Value": "Aktiv",
+  "stat3Label": "Ziel",
+  "stat3Value": "Top Clip",
+  "previewBadge": "Battle Preview",
+  "previewTitle": "So fühlt sich ClipBattle an",
+  "previewLive": "Live Feeling",
+  "clipATitle": "Epic Sniper Flick",
+  "clipAGame": "Fortnite",
+  "clipAUser": "Gepostet von: PlayerOne",
+  "clipBTitle": "Insane Clutch Moment",
+  "clipBGame": "Warzone",
+  "clipBUser": "Gepostet von: King55",
+  "previewLeft": "58% Clip A",
+  "previewRight": "42% Clip B",
+  "whyBadge": "Warum ClipBattle?",
+  "whyTitle": "Mehr als nur ein normaler Feed",
+  "why1Title": "Creator vs Creator",
+  "why1Text": "Deine Clips werden nicht nur gesehen, sondern direkt mit anderen verglichen.",
+  "why2Title": "Rankings & Sichtbarkeit",
+  "why2Text": "Je besser dein Clip performt, desto höher steigst du im Leaderboard.",
+  "why3Title": "Stärkere Community",
+  "why3Text": "Battles sorgen für mehr Interaktion, mehr Spannung und mehr Wiederkommen.",
+  "featuresBadge": "Features",
+  "featuresTitle": "Alles, was du für virale Clip-Battles brauchst",
+  "feature1Title": "Clips hochladen",
+  "feature1Text": "Teile deine besten Gaming Momente in Sekunden mit der Community.",
+  "feature2Title": "Direkte Battles",
+  "feature2Text": "Zwei Clips treten gegeneinander an — die Community entscheidet.",
+  "feature3Title": "Leaderboard",
+  "feature3Text": "Die besten Clips steigen nach oben und bekommen maximale Aufmerksamkeit."
+},
 
   "Feed": {
     "badge": "🔥 Community Feed",
