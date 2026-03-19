@@ -83,9 +83,20 @@
 },
 
   "Leaderboard": {
-    "loading": "Yükleniyor...",
-    "empty": "Yok."
-  },
+  "badge": "🏆 Sıralama",
+  "title": "En iyi klipler",
+  "subtitle": "Topluluktaki en başarılı klipler oy sayısına göre.",
+  "loading": "Sıralama yükleniyor...",
+  "loadError": "Sıralama yüklenemedi.",
+  "empty": "Henüz sıralamada klip yok.",
+  "rank": "Sıra",
+  "clip": "Klip",
+  "game": "Oyun",
+  "creator": "Creator",
+  "votes": "Oy",
+  "unknownUser": "Bilinmiyor",
+  "unknownGame": "Bilinmiyor"
+},
 
   "Account": {
     "section": "Hesap",
