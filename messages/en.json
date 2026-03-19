@@ -13,73 +13,71 @@
   },
 
   "Home": {
-  "eyebrow": "Gaming Clips • Battles • Rankings",
-  "titleA": "Welcome to",
-  "titleB": "ClipBattle",
-  "subtitle": "Upload your best clips and compete with others.",
+    "eyebrow": "Gaming Clips • Battles • Rankings",
+    "titleA": "Welcome to",
+    "titleB": "ClipBattle",
+    "subtitle": "Upload your clips and compete.",
 
-  "battle": "Start battle",
-  "upload": "Upload clip",
+    "battle": "Start battle",
+    "upload": "Upload clip",
 
-  "stat1Label": "Battles",
-  "stat1Value": "24/7",
-  "stat2Label": "Community",
-  "stat2Value": "Active",
-  "stat3Label": "Goal",
-  "stat3Value": "Top Clip",
+    "stat1Label": "Battles",
+    "stat1Value": "24/7",
+    "stat2Label": "Community",
+    "stat2Value": "Active",
+    "stat3Label": "Goal",
+    "stat3Value": "Top Clip",
 
-  "previewBadge": "Battle Preview",
-  "previewTitle": "What ClipBattle feels like",
-  "previewLive": "Live feeling",
+    "previewBadge": "Battle Preview",
+    "previewTitle": "What it feels like",
+    "previewLive": "Live",
 
-  "clipATitle": "Epic Sniper Flick",
-  "clipAGame": "Fortnite",
-  "clipAUser": "Posted by: PlayerOne",
+    "clipATitle": "Epic Sniper Flick",
+    "clipAGame": "Fortnite",
+    "clipAUser": "Posted by: PlayerOne",
 
-  "clipBTitle": "Insane Clutch Moment",
-  "clipBGame": "Warzone",
-  "clipBUser": "Posted by: King55",
+    "clipBTitle": "Insane Clutch",
+    "clipBGame": "Warzone",
+    "clipBUser": "Posted by: King55",
 
-  "previewLeft": "58% Clip A",
-  "previewRight": "42% Clip B",
+    "previewLeft": "58% Clip A",
+    "previewRight": "42% Clip B",
 
-  "whyBadge": "Why ClipBattle?",
-  "whyTitle": "More than a feed",
+    "whyBadge": "Why?",
+    "whyTitle": "More than feed",
 
-  "why1Title": "Creator vs Creator",
-  "why1Text": "Clips are compared directly.",
+    "why1Title": "Comparison",
+    "why1Text": "Clips compete.",
 
-  "why2Title": "Ranking",
-  "why2Text": "Climb the leaderboard.",
+    "why2Title": "Ranking",
+    "why2Text": "Climb.",
 
-  "why3Title": "Community",
-  "why3Text": "More engagement.",
+    "why3Title": "Community",
+    "why3Text": "Engagement.",
 
-  "featuresBadge": "Features",
-  "featuresTitle": "Everything you need",
+    "featuresBadge": "Features",
+    "featuresTitle": "Everything you need",
 
-  "feature1Title": "Upload",
-  "feature1Text": "Upload clips.",
+    "feature1Title": "Upload",
+    "feature1Text": "Share clips.",
 
-  "feature2Title": "Battles",
-  "feature2Text": "Direct duels.",
+    "feature2Title": "Battle",
+    "feature2Text": "Fight.",
 
-  "feature3Title": "Leaderboard",
-  "feature3Text": "Top clips win."
-}
+    "feature3Title": "Leaderboard",
+    "feature3Text": "Win."
+  },
 
   "Feed": {
     "badge": "🔥 Community Feed",
     "title": "All clips",
-    "subtitle": "Discover the newest clips.",
-    "loading": "Loading clips...",
-    "empty": "No clips yet.",
-    "emptyTitle": "No clips yet",
-    "emptyText": "Clips will appear here once uploaded.",
+    "subtitle": "Discover clips.",
+    "loading": "Loading...",
+    "empty": "No clips.",
     "postedBy": "Posted by",
     "votes": "Votes",
-    "gameFallback": "Unknown game",
-    "unknownUser": "Unknown"
+    "unknownUser": "Unknown",
+    "gameFallback": "Unknown"
   },
 
   "Battle": {
@@ -89,16 +87,15 @@
     "newRound": "New round",
     "newRoundShort": "New round",
     "pageTitle": "Battle",
-    "loading": "Loading battle...",
-    "loadError": "Battle could not be loaded.",
-    "emptyState": "Not enough clips available.",
+    "loading": "Loading...",
+    "loadError": "Error loading.",
+    "emptyState": "Not enough clips.",
     "unknownUser": "Unknown"
   },
 
   "Leaderboard": {
-    "loading": "Loading leaderboard...",
-    "loadError": "Leaderboard could not be loaded.",
-    "empty": "No clips yet."
+    "loading": "Loading...",
+    "empty": "No clips."
   },
 
   "Account": {
@@ -108,12 +105,12 @@
     "username": "Username",
     "email": "Email",
     "deleteTitle": "Delete account",
-    "deleteText": "Your account will be permanently deleted.",
-    "deleteButton": "Delete account",
+    "deleteText": "Account will be deleted.",
+    "deleteButton": "Delete",
     "deleting": "Deleting...",
-    "confirmDelete": "Do you really want to delete your account?",
+    "confirmDelete": "Delete account?",
     "notLoggedIn": "Not logged in",
-    "deleteSuccess": "Account deleted",
-    "deleteError": "Error deleting account"
+    "deleteSuccess": "Deleted",
+    "deleteError": "Error"
   }
 }
