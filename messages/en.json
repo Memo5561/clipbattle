@@ -36,15 +36,18 @@
   },
 
   "Battle": {
-    "badge": "⚔️ Arena",
-    "title": "Two clips",
-    "subtitle": "Vote.",
-    "newRound": "New",
-    "loading": "Loading...",
-    "loadError": "Error",
-    "emptyState": "Not enough clips",
-    "unknownUser": "Unknown"
-  },
+  "badge": "⚔️ Arena",
+  "title": "Two clips",
+  "subtitle": "Vote.",
+  "newRound": "New",
+  "newRoundShort": "New",
+  "pageTitle": "Battle",
+  "loading": "Loading...",
+  "loadError": "Error",
+  "emptyState": "Not enough clips",
+  "unknownUser": "Unknown",
+  "voteError": "Vote error: "
+},
 
   "Upload": {
     "badge": "🎥 Upload",
