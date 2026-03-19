@@ -13,91 +13,88 @@
   },
 
   "Home": {
-  "eyebrow": "Gaming Clips • Battles • Rankings",
-  "titleA": "Willkommen bei",
-  "titleB": "ClipBattle",
-  "subtitle": "Lade deine besten Gaming Clips hoch, tritt gegen andere Creator an und zeig wer den krassesten Clip hat.",
+    "eyebrow": "Gaming Clips • Battles • Rankings",
+    "titleA": "Willkommen bei",
+    "titleB": "ClipBattle",
+    "subtitle": "Lade deine besten Gaming Clips hoch und tritt gegen andere Creator an.",
 
-  "battle": "Battle starten",
-  "upload": "Clip hochladen",
+    "battle": "Battle starten",
+    "upload": "Clip hochladen",
 
-  "stat1Label": "Battles",
-  "stat1Value": "24/7",
-  "stat2Label": "Community",
-  "stat2Value": "Aktiv",
-  "stat3Label": "Ziel",
-  "stat3Value": "Top Clip",
+    "stat1Label": "Battles",
+    "stat1Value": "24/7",
+    "stat2Label": "Community",
+    "stat2Value": "Aktiv",
+    "stat3Label": "Ziel",
+    "stat3Value": "Top Clip",
 
-  "previewBadge": "Battle Preview",
-  "previewTitle": "So fühlt sich ClipBattle an",
-  "previewLive": "Live Feeling",
+    "previewBadge": "Battle Preview",
+    "previewTitle": "So fühlt sich ClipBattle an",
+    "previewLive": "Live Feeling",
 
-  "clipATitle": "Epic Sniper Flick",
-  "clipAGame": "Fortnite",
-  "clipAUser": "Gepostet von: PlayerOne",
+    "clipATitle": "Epic Sniper Flick",
+    "clipAGame": "Fortnite",
+    "clipAUser": "Gepostet von: PlayerOne",
 
-  "clipBTitle": "Insane Clutch Moment",
-  "clipBGame": "Warzone",
-  "clipBUser": "Gepostet von: King55",
+    "clipBTitle": "Insane Clutch Moment",
+    "clipBGame": "Warzone",
+    "clipBUser": "Gepostet von: King55",
 
-  "previewLeft": "58% Clip A",
-  "previewRight": "42% Clip B",
+    "previewLeft": "58% Clip A",
+    "previewRight": "42% Clip B",
 
-  "whyBadge": "Warum ClipBattle?",
-  "whyTitle": "Mehr als nur ein normaler Feed",
+    "whyBadge": "Warum ClipBattle?",
+    "whyTitle": "Mehr als nur ein Feed",
 
-  "why1Title": "Creator vs Creator",
-  "why1Text": "Deine Clips werden direkt verglichen.",
+    "why1Title": "Creator vs Creator",
+    "why1Text": "Clips werden direkt verglichen.",
 
-  "why2Title": "Rankings",
-  "why2Text": "Steige im Leaderboard auf.",
+    "why2Title": "Ranking",
+    "why2Text": "Steige im Leaderboard.",
 
-  "why3Title": "Community",
-  "why3Text": "Mehr Interaktion und Spannung.",
+    "why3Title": "Community",
+    "why3Text": "Mehr Interaktion.",
 
-  "featuresBadge": "Features",
-  "featuresTitle": "Alles was du brauchst",
+    "featuresBadge": "Features",
+    "featuresTitle": "Alles was du brauchst",
 
-  "feature1Title": "Upload",
-  "feature1Text": "Lade Clips hoch.",
+    "feature1Title": "Upload",
+    "feature1Text": "Lade Clips hoch.",
 
-  "feature2Title": "Battles",
-  "feature2Text": "Direkte Duelle.",
+    "feature2Title": "Battle",
+    "feature2Text": "Direkte Duelle.",
 
-  "feature3Title": "Leaderboard",
-  "feature3Text": "Top Clips gewinnen."
-}
+    "feature3Title": "Leaderboard",
+    "feature3Text": "Top Clips gewinnen."
+  },
 
   "Feed": {
     "badge": "🔥 Community Feed",
     "title": "Alle Clips",
-    "subtitle": "Entdecke die neuesten und besten Gaming Clips.",
+    "subtitle": "Entdecke die neuesten Clips.",
     "loading": "Clips werden geladen...",
     "empty": "Noch keine Clips vorhanden.",
-    "emptyTitle": "Noch keine Clips",
-    "emptyText": "Sobald jemand etwas hochlädt, erscheinen die Clips hier.",
     "postedBy": "Gepostet von",
     "votes": "Votes",
-    "gameFallback": "Unbekanntes Game",
-    "unknownUser": "Unbekannt"
+    "unknownUser": "Unbekannt",
+    "gameFallback": "Unbekannt"
   },
 
   "Battle": {
     "badge": "⚔️ Battle Arena",
     "title": "Zwei Clips. Eine Entscheidung.",
-    "subtitle": "Schau dir beide Clips an und vote für den besseren.",
+    "subtitle": "Schau und vote.",
     "newRound": "Neue Runde",
     "newRoundShort": "Neue Runde",
     "pageTitle": "Battle",
     "loading": "Lade Battle...",
     "loadError": "Battle konnte nicht geladen werden.",
-    "emptyState": "Es sind noch nicht genug Clips vorhanden.",
+    "emptyState": "Nicht genug Clips vorhanden.",
     "unknownUser": "Unbekannt"
   },
 
   "Leaderboard": {
     "loading": "Leaderboard wird geladen...",
-    "loadError": "Leaderboard konnte nicht geladen werden.",
     "empty": "Noch keine Clips vorhanden."
   },
 
@@ -108,12 +105,12 @@
     "username": "Username",
     "email": "E-Mail",
     "deleteTitle": "Konto löschen",
-    "deleteText": "Dein Konto und alle Daten werden dauerhaft gelöscht.",
+    "deleteText": "Dein Konto wird gelöscht.",
     "deleteButton": "Konto löschen",
     "deleting": "Wird gelöscht...",
-    "confirmDelete": "Willst du dein Konto wirklich dauerhaft löschen?",
+    "confirmDelete": "Willst du dein Konto löschen?",
     "notLoggedIn": "Nicht eingeloggt",
-    "deleteSuccess": "Konto erfolgreich gelöscht",
-    "deleteError": "Fehler beim Löschen"
+    "deleteSuccess": "Konto gelöscht",
+    "deleteError": "Fehler"
   }
 }
