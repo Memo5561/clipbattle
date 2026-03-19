@@ -100,7 +100,11 @@ export default function UploadPage() {
       return;
     }
 
-    const username = user.user_metadata?.username || t("unknownUser");
+    const username =
+      user.user_metadata?.username ||
+      user.email?.split("@")[0] ||
+      "User";
+
     const fileName = `${Date.now()}-${file.name}`;
 
     const {error: uploadError} = await supabase.storage
@@ -158,9 +162,13 @@ export default function UploadPage() {
             {t("badge")}
           </p>
 
-          <h1 className="text-3xl font-bold md:text-4xl">{t("title")}</h1>
+          <h1 className="text-3xl font-bold md:text-4xl">
+            {t("title")}
+          </h1>
 
-          <p className="mt-2 text-zinc-400">{t("subtitle")}</p>
+          <p className="mt-2 text-zinc-400">
+            {t("subtitle")}
+          </p>
         </div>
 
         <div className="space-y-6">
