@@ -90,7 +90,7 @@ export default function Navbar() {
         data: {user}
       } = await supabase.auth.getUser();
 
-      setUsername(user?.user_metadata?.username ?? null);
+      setUsername(user?.user_metadata?.username ?? user?.email ?? null);
     };
 
     loadUser();
@@ -98,7 +98,9 @@ export default function Navbar() {
     const {
       data: {subscription}
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUsername(session?.user?.user_metadata?.username ?? null);
+      setUsername(
+        session?.user?.user_metadata?.username ?? session?.user?.email ?? null
+      );
     });
 
     return () => {
@@ -161,7 +163,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* TOP NAV */}
       <header className="sticky top-0 z-50 border-b border-zinc-900/80 bg-black/60 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <Link href="/" className="flex min-w-0 items-center gap-3">
@@ -179,7 +180,6 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop */}
           <nav className="hidden flex-wrap items-center gap-2 md:flex">
             {desktopNavLinks.map((link) => (
               <DesktopNavLink key={link.href} href={link.href} label={link.label} />
@@ -230,7 +230,6 @@ export default function Navbar() {
             )}
           </nav>
 
-          {/* Mobile right side */}
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher />
 
@@ -288,7 +287,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* MOBILE BOTTOM NAV */}
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-800 bg-black/90 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-md items-center gap-1 rounded-3xl border border-zinc-800 bg-zinc-900/80 p-1.5 shadow-2xl">
           <MobileNavItem
