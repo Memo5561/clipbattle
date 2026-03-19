@@ -19,6 +19,8 @@ export default function BattlePage() {
   const [clipB, setClipB] = useState<Clip | null>(null);
   const [loading, setLoading] = useState(true);
   const [winnerId, setWinnerId] = useState<string | null>(null);
+  const [voting, setVoting] = useState(false);
+  const [errorText, setErrorText] = useState<string | null>(null);
 
   const videoRefA = useRef<HTMLVideoElement>(null);
   const videoRefB = useRef<HTMLVideoElement>(null);
@@ -26,27 +28,45 @@ export default function BattlePage() {
   const [mutedA, setMutedA] = useState(true);
   const [mutedB, setMutedB] = useState(true);
 
+  const generatePair = (list: Clip[]) => {
+    if (!list || list.length < 2) {
+      setClipA(null);
+      setClipB(null);
+      return;
+    }
+
+    const shuffled = [...list].sort(() => Math.random() - 0.5);
+    const first = shuffled[0];
+    const second = shuffled.find((clip) => clip.id !== first.id) || shuffled[1];
+
+    setClipA(first);
+    setClipB(second);
+    setWinnerId(null);
+  };
+
   const fetchClips = async () => {
-    const {data} = await supabase
+    setLoading(true);
+    setErrorText(null);
+
+    const {data, error} = await supabase
       .from("clips")
       .select("*")
       .order("created_at", {ascending: false});
 
-    if (!data || data.length < 2) {
+    if (error) {
+      console.error("Battle load error:", error.message);
+      setErrorText("Battle konnte nicht geladen werden.");
+      setClips([]);
+      setClipA(null);
+      setClipB(null);
       setLoading(false);
       return;
     }
 
-    setClips(data);
-    generatePair(data);
+    const loadedClips = (data as Clip[]) || [];
+    setClips(loadedClips);
+    generatePair(loadedClips);
     setLoading(false);
-  };
-
-  const generatePair = (list: Clip[]) => {
-    const shuffled = [...list].sort(() => Math.random() - 0.5);
-    setClipA(shuffled[0]);
-    setClipB(shuffled[1]);
-    setWinnerId(null);
   };
 
   useEffect(() => {
@@ -54,20 +74,70 @@ export default function BattlePage() {
   }, []);
 
   const vote = async (clip: Clip) => {
+    if (voting) return;
+
+    setVoting(true);
     setWinnerId(clip.id);
 
-    await supabase
+    const newVotes = clip.votes + 1;
+
+    const {error} = await supabase
       .from("clips")
-      .update({votes: clip.votes + 1})
+      .update({votes: newVotes})
       .eq("id", clip.id);
 
+    if (error) {
+      console.error("Vote error:", error.message);
+      setVoting(false);
+      setWinnerId(null);
+      alert("Fehler beim Voten: " + error.message);
+      return;
+    }
+
+    const updatedClips = clips.map((item) =>
+      item.id === clip.id ? {...item, votes: newVotes} : item
+    );
+
+    setClips(updatedClips);
+
+    if (clipA?.id === clip.id) {
+      setClipA({...clipA, votes: newVotes});
+    }
+
+    if (clipB?.id === clip.id) {
+      setClipB({...clipB, votes: newVotes});
+    }
+
     setTimeout(() => {
-      generatePair(clips);
+      generatePair(updatedClips);
+      setVoting(false);
     }, 800);
   };
 
-  if (loading || !clipA || !clipB) {
-    return <div className="mt-20 text-center text-zinc-400">Loading...</div>;
+  if (loading) {
+    return (
+      <ProtectedPage>
+        <div className="mt-20 text-center text-zinc-400">Loading...</div>
+      </ProtectedPage>
+    );
+  }
+
+  if (errorText) {
+    return (
+      <ProtectedPage>
+        <div className="mt-20 text-center text-zinc-400">{errorText}</div>
+      </ProtectedPage>
+    );
+  }
+
+  if (!clipA || !clipB) {
+    return (
+      <ProtectedPage>
+        <div className="mt-20 px-6 text-center text-zinc-400">
+          Es sind noch nicht genug Clips für ein Battle vorhanden.
+        </div>
+      </ProtectedPage>
+    );
   }
 
   return (
@@ -77,8 +147,10 @@ export default function BattlePage() {
           <h1 className="text-xl font-bold">Battle</h1>
 
           <button
+            type="button"
             onClick={() => generatePair(clips)}
-            className="flex items-center gap-2 rounded-xl bg-zinc-800 px-4 py-2"
+            disabled={voting}
+            className="flex items-center gap-2 rounded-xl bg-zinc-800 px-4 py-2 disabled:opacity-50"
           >
             <RefreshCw size={16} />
             Neue Runde
@@ -92,6 +164,7 @@ export default function BattlePage() {
           toggleMute={() => setMutedA(!mutedA)}
           onVote={() => vote(clipA)}
           isWinner={winnerId === clipA.id}
+          disabled={voting}
         />
 
         <div className="text-center text-xs text-zinc-600">VS</div>
@@ -103,6 +176,7 @@ export default function BattlePage() {
           toggleMute={() => setMutedB(!mutedB)}
           onVote={() => vote(clipB)}
           isWinner={winnerId === clipB.id}
+          disabled={voting}
         />
       </div>
     </ProtectedPage>
@@ -115,7 +189,8 @@ function SwipeCard({
   muted,
   toggleMute,
   onVote,
-  isWinner
+  isWinner,
+  disabled
 }: {
   clip: Clip;
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -123,6 +198,7 @@ function SwipeCard({
   toggleMute: () => void;
   onVote: () => void;
   isWinner: boolean;
+  disabled: boolean;
 }) {
   const [dragX, setDragX] = useState(0);
   const [dragY, setDragY] = useState(0);
@@ -135,12 +211,15 @@ function SwipeCard({
   const progress = Math.min(dragX / threshold, 1);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (disabled) return;
+
     startX.current = e.touches[0].clientX;
     startY.current = e.touches[0].clientY;
     setDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (disabled) return;
     if (startX.current === null || startY.current === null) return;
 
     const currentX = e.touches[0].clientX;
@@ -154,6 +233,8 @@ function SwipeCard({
   };
 
   const handleTouchEnd = () => {
+    if (disabled) return;
+
     if (dragX > threshold) {
       if (typeof navigator !== "undefined" && "vibrate" in navigator) {
         navigator.vibrate(40);
@@ -191,6 +272,7 @@ function SwipeCard({
         loop
         muted={muted}
         playsInline
+        preload="metadata"
         className="h-[70vh] w-full object-cover"
       />
 
@@ -208,10 +290,11 @@ function SwipeCard({
 
       <div className="absolute bottom-5 left-5">
         <h2 className="text-2xl font-bold">{clip.title}</h2>
-        <p className="text-sm text-zinc-400">{clip.username}</p>
+        <p className="text-sm text-zinc-400">{clip.username || "Unknown"}</p>
       </div>
 
       <button
+        type="button"
         onClick={toggleMute}
         className="absolute left-4 top-4 rounded-full bg-black/60 p-2"
       >
