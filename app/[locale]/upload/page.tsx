@@ -16,13 +16,18 @@ export default function UploadPage() {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkUser = async () => {
       const {
         data: {user}
       } = await supabase.auth.getUser();
 
+      if (!mounted) return;
+
       if (!user) {
-        router.push("/auth");
+        setCheckingAuth(false);
+        router.replace("/auth");
         return;
       }
 
@@ -30,6 +35,10 @@ export default function UploadPage() {
     };
 
     checkUser();
+
+    return () => {
+      mounted = false;
+    };
   }, [router]);
 
   const handleUpload = async () => {
@@ -47,7 +56,7 @@ export default function UploadPage() {
     if (!user) {
       alert(t("alertLogin"));
       setLoading(false);
-      router.push("/auth");
+      router.replace("/auth");
       return;
     }
 
@@ -95,7 +104,7 @@ export default function UploadPage() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
+      <div className="flex min-h-screen items-center justify-center text-white">
         {t("buttonLoading")}
       </div>
     );
@@ -161,6 +170,7 @@ export default function UploadPage() {
           </div>
 
           <button
+            type="button"
             onClick={handleUpload}
             disabled={loading}
             className="w-full rounded-2xl bg-white py-3 font-semibold text-black transition hover:scale-[1.01] hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
