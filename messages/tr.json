@@ -11,6 +11,22 @@
     "tagline": "Oyun Klipleri • Düellolar • Sıralamalar",
     "accountInfo": "Hesap bilgileri"
   },
+
+  "Home": {
+    "eyebrow": "Oyun Klipleri • Düellolar • Sıralamalar",
+    "titleA": "Hoş geldin",
+    "titleB": "ClipBattle",
+    "subtitle": "En iyi kliplerini yükle ve diğerleriyle yarış.",
+    "battle": "Battle başlat",
+    "upload": "Klip yükle",
+    "stat1Label": "Battle",
+    "stat1Value": "7/24",
+    "stat2Label": "Topluluk",
+    "stat2Value": "Aktif",
+    "stat3Label": "Hedef",
+    "stat3Value": "Top Klip"
+  },
+
   "Feed": {
     "badge": "🔥 Topluluk Akışı",
     "title": "Tüm klipler",
@@ -24,6 +40,7 @@
     "gameFallback": "Bilinmeyen oyun",
     "unknownUser": "Bilinmiyor"
   },
+
   "Battle": {
     "badge": "⚔️ Battle Arenası",
     "title": "İki klip. Tek karar.",
@@ -36,11 +53,13 @@
     "emptyState": "Yeterli klip yok.",
     "unknownUser": "Bilinmiyor"
   },
+
   "Leaderboard": {
     "loading": "Sıralama yükleniyor...",
     "loadError": "Sıralama yüklenemedi.",
     "empty": "Henüz klip yok."
   },
+
   "Account": {
     "section": "Hesap",
     "title": "Hesap bilgileri",
