@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect, useRef, useState} from "react";
+import {useTranslations} from "next-intl";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
 import {RefreshCw, Volume2, VolumeX, Trophy} from "lucide-react";
@@ -14,6 +15,8 @@ type Clip = {
 };
 
 export default function BattlePage() {
+  const t = useTranslations("Battle");
+
   const [clips, setClips] = useState<Clip[]>([]);
   const [clipA, setClipA] = useState<Clip | null>(null);
   const [clipB, setClipB] = useState<Clip | null>(null);
@@ -55,7 +58,7 @@ export default function BattlePage() {
 
     if (error) {
       console.error("Battle load error:", error.message);
-      setErrorText("Battle konnte nicht geladen werden.");
+      setErrorText(t("loadError"));
       setClips([]);
       setClipA(null);
       setClipB(null);
@@ -90,7 +93,7 @@ export default function BattlePage() {
       console.error("Vote error:", error.message);
       setVoting(false);
       setWinnerId(null);
-      alert("Fehler beim Voten: " + error.message);
+      alert(t("voteError") + error.message);
       return;
     }
 
@@ -117,7 +120,7 @@ export default function BattlePage() {
   if (loading) {
     return (
       <ProtectedPage>
-        <div className="mt-20 text-center text-zinc-400">Loading...</div>
+        <div className="mt-20 text-center text-zinc-400">{t("loading")}</div>
       </ProtectedPage>
     );
   }
@@ -134,7 +137,7 @@ export default function BattlePage() {
     return (
       <ProtectedPage>
         <div className="mt-20 px-6 text-center text-zinc-400">
-          Es sind noch nicht genug Clips für ein Battle vorhanden.
+          {t("emptyState")}
         </div>
       </ProtectedPage>
     );
@@ -144,7 +147,7 @@ export default function BattlePage() {
     <ProtectedPage>
       <div className="mx-auto max-w-5xl space-y-2 text-white">
         <div className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900 p-4">
-          <h1 className="text-xl font-bold">Battle</h1>
+          <h1 className="text-xl font-bold">{t("pageTitle")}</h1>
 
           <button
             type="button"
@@ -153,7 +156,7 @@ export default function BattlePage() {
             className="flex items-center gap-2 rounded-xl bg-zinc-800 px-4 py-2 disabled:opacity-50"
           >
             <RefreshCw size={16} />
-            Neue Runde
+            {t("newRoundShort")}
           </button>
         </div>
 
@@ -165,6 +168,7 @@ export default function BattlePage() {
           onVote={() => vote(clipA)}
           isWinner={winnerId === clipA.id}
           disabled={voting}
+          unknownUser={t("unknownUser")}
         />
 
         <div className="text-center text-xs text-zinc-600">VS</div>
@@ -177,6 +181,7 @@ export default function BattlePage() {
           onVote={() => vote(clipB)}
           isWinner={winnerId === clipB.id}
           disabled={voting}
+          unknownUser={t("unknownUser")}
         />
       </div>
     </ProtectedPage>
@@ -190,7 +195,8 @@ function SwipeCard({
   toggleMute,
   onVote,
   isWinner,
-  disabled
+  disabled,
+  unknownUser
 }: {
   clip: Clip;
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -199,6 +205,7 @@ function SwipeCard({
   onVote: () => void;
   isWinner: boolean;
   disabled: boolean;
+  unknownUser: string;
 }) {
   const [dragX, setDragX] = useState(0);
   const [dragY, setDragY] = useState(0);
@@ -290,7 +297,7 @@ function SwipeCard({
 
       <div className="absolute bottom-5 left-5">
         <h2 className="text-2xl font-bold">{clip.title}</h2>
-        <p className="text-sm text-zinc-400">{clip.username || "Unknown"}</p>
+        <p className="text-sm text-zinc-400">{clip.username || unknownUser}</p>
       </div>
 
       <button
