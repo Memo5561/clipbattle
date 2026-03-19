@@ -26,13 +26,13 @@ export default function FeedPage() {
   const [likedClipIds, setLikedClipIds] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [showHeart, setShowHeart] = useState<string | null>(null);
+  const [likingId, setLikingId] = useState<string | null>(null);
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const lastTapRef = useRef<number>(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  // 🔥 Active Video
   const playActiveVideo = useCallback(() => {
     const center = window.innerHeight / 2;
     let bestId: string | null = null;
@@ -65,29 +65,41 @@ export default function FeedPage() {
     });
   }, [clips, muted]);
 
-  // 🔥 Load Data
   useEffect(() => {
     const load = async () => {
+      setLoading(true);
+
       const {
         data: {user}
       } = await supabase.auth.getUser();
 
       setUserId(user?.id ?? null);
 
-      const {data} = await supabase
+      const {data: clipsData, error: clipsError} = await supabase
         .from("clips")
         .select("*")
         .order("created_at", {ascending: false});
 
-      setClips((data as Clip[]) || []);
+      if (clipsError) {
+        console.error("Feed load error:", clipsError.message);
+        setClips([]);
+        setLoading(false);
+        return;
+      }
+
+      setClips((clipsData as Clip[]) || []);
 
       if (user) {
-        const {data: likes} = await supabase
+        const {data: likesData, error: likesError} = await supabase
           .from("clip_likes")
           .select("clip_id")
           .eq("user_id", user.id);
 
-        setLikedClipIds((likes || []).map((l) => l.clip_id));
+        if (likesError) {
+          console.error("Likes load error:", likesError.message);
+        } else {
+          setLikedClipIds((likesData || []).map((item) => item.clip_id));
+        }
       }
 
       setLoading(false);
@@ -96,79 +108,139 @@ export default function FeedPage() {
     load();
   }, []);
 
-  // 🔥 Scroll Handling
   useEffect(() => {
     if (!clips.length) return;
 
-    const timeout = setTimeout(playActiveVideo, 200);
+    const timeout = setTimeout(() => {
+      playActiveVideo();
+    }, 200);
 
-    const handleScroll = () => playActiveVideo();
+    const handleScroll = () => {
+      playActiveVideo();
+    };
+
+    const handleResize = () => {
+      playActiveVideo();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        Object.values(videoRefs.current).forEach((video) => video?.pause());
+      } else {
+        setTimeout(() => {
+          playActiveVideo();
+        }, 150);
+      }
+    };
+
     const container = scrollRef.current;
 
-    container?.addEventListener("scroll", handleScroll);
+    container?.addEventListener("scroll", handleScroll, {passive: true});
+    window.addEventListener("resize", handleResize);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       clearTimeout(timeout);
       container?.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [clips, playActiveVideo]);
 
-  // 🔊 Mute
   const toggleMute = () => {
-    setMuted((prev) => !prev);
+    const nextMuted = !muted;
+    setMuted(nextMuted);
+
+    Object.values(videoRefs.current).forEach((video) => {
+      if (video) {
+        video.muted = nextMuted;
+      }
+    });
+
+    setTimeout(() => {
+      playActiveVideo();
+    }, 50);
   };
 
-  // ❤️ Like
   const handleLike = async (clip: Clip) => {
-    if (!userId) return;
+    if (!userId || likingId) return;
 
     const isLiked = likedClipIds.includes(clip.id);
+    setLikingId(clip.id);
 
     if (!isLiked) {
-      await supabase.from("clip_likes").insert({
+      const {error: likeError} = await supabase.from("clip_likes").insert({
         clip_id: clip.id,
         user_id: userId
       });
 
+      if (likeError) {
+        console.error("Like insert error:", likeError.message);
+        setLikingId(null);
+        return;
+      }
+
       const newVotes = clip.votes + 1;
 
-      await supabase
+      const {error: votesError} = await supabase
         .from("clips")
         .update({votes: newVotes})
         .eq("id", clip.id);
+
+      if (votesError) {
+        console.error("Votes update error:", votesError.message);
+        setLikingId(null);
+        return;
+      }
 
       setLikedClipIds((prev) => [...prev, clip.id]);
       setClips((prev) =>
         prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
       );
     } else {
-      await supabase
+      const {error: unlikeError} = await supabase
         .from("clip_likes")
         .delete()
         .eq("clip_id", clip.id)
         .eq("user_id", userId);
 
+      if (unlikeError) {
+        console.error("Like delete error:", unlikeError.message);
+        setLikingId(null);
+        return;
+      }
+
       const newVotes = Math.max(clip.votes - 1, 0);
 
-      await supabase
+      const {error: votesError} = await supabase
         .from("clips")
         .update({votes: newVotes})
         .eq("id", clip.id);
+
+      if (votesError) {
+        console.error("Votes update error:", votesError.message);
+        setLikingId(null);
+        return;
+      }
 
       setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
       setClips((prev) =>
         prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
       );
     }
+
+    setLikingId(null);
   };
 
-  // ❤️ Double Tap
   const handleDoubleTap = (clipId: string) => {
     const now = Date.now();
 
     if (now - lastTapRef.current < 300) {
       const clip = clips.find((c) => c.id === clipId);
-      if (clip) handleLike(clip);
+
+      if (clip && !likedClipIds.includes(clip.id)) {
+        handleLike(clip);
+      }
 
       setShowHeart(clipId);
       setTimeout(() => setShowHeart(null), 600);
@@ -181,7 +253,20 @@ export default function FeedPage() {
     return (
       <ProtectedPage>
         <div className="flex h-screen items-center justify-center text-white">
-          Loading...
+          {t("loading")}
+        </div>
+      </ProtectedPage>
+    );
+  }
+
+  if (clips.length === 0) {
+    return (
+      <ProtectedPage>
+        <div className="flex h-screen items-center justify-center px-6 text-center text-white">
+          <div>
+            <h1 className="text-2xl font-bold">{t("emptyTitle")}</h1>
+            <p className="mt-2 text-zinc-400">{t("emptyText")}</p>
+          </div>
         </div>
       </ProtectedPage>
     );
@@ -213,40 +298,46 @@ export default function FeedPage() {
                   muted={muted}
                   loop
                   playsInline
+                  preload="metadata"
                   onClick={() => handleDoubleTap(clip.id)}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
 
-                {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80" />
 
-                {/* Mute */}
                 <button
+                  type="button"
                   onClick={toggleMute}
-                  className="absolute top-6 right-4 z-20 bg-black/50 p-3 rounded-full"
+                  className="absolute top-6 right-4 z-20 rounded-full bg-black/50 p-3"
                 >
                   {muted ? <VolumeX /> : <Volume2 />}
                 </button>
 
-                {/* Like */}
                 <div className="absolute right-4 bottom-28 z-20 flex flex-col items-center">
-                  <button onClick={() => handleLike(clip)}>
+                  <button
+                    type="button"
+                    onClick={() => handleLike(clip)}
+                    disabled={likingId === clip.id || !userId}
+                  >
                     <Heart
                       className={`h-8 w-8 ${
-                        isLiked ? "text-red-500 fill-red-500" : "text-white"
+                        isLiked ? "fill-red-500 text-red-500" : "text-white"
                       }`}
                     />
                   </button>
                   <span>{clip.votes}</span>
                 </div>
 
-                {/* INFO + FRIEND BUTTON */}
                 <div className="absolute bottom-10 left-4 right-20 z-20">
                   <h2 className="text-2xl font-bold">{clip.title}</h2>
 
+                  {clip.game && (
+                    <p className="mt-1 text-sm text-zinc-400">{clip.game}</p>
+                  )}
+
                   <div className="mt-2 flex items-center gap-3">
                     <p className="text-sm text-zinc-300">
-                      {clip.username || "Unknown"}
+                      {clip.username || t("unknownUser")}
                     </p>
 
                     {clip.user_id && (
@@ -255,10 +346,9 @@ export default function FeedPage() {
                   </div>
                 </div>
 
-                {/* DOUBLE TAP HEART */}
                 {showHeart === clip.id && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Heart className="h-24 w-24 text-white animate-ping" />
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <Heart className="h-24 w-24 animate-ping text-white" />
                   </div>
                 )}
               </section>
