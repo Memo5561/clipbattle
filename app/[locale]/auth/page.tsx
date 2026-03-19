@@ -14,7 +14,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   const handleAuth = async () => {
-    if (!email || !password || (!isLogin && !username)) {
+    if (!email || !password || (!isLogin && !username.trim())) {
       alert(t("alertFillAll"));
       return;
     }
@@ -36,44 +36,56 @@ export default function AuthPage() {
 
       alert(t("alertLoggedIn"));
       window.location.href = "/";
-    } else {
-      const {data, error} = await supabase.auth.signUp({
-        email,
-        password
-      });
+      return;
+    }
 
-      if (error) {
-        setLoading(false);
-        alert(t("alertRegisterError") + error.message);
-        return;
-      }
+    const cleanUsername = username.trim();
 
-      const user = data.user;
-
-      if (user) {
-        const {error: updateError} = await supabase.auth.updateUser({
-          data: {
-            username: username
-          }
-        });
-
-        if (updateError) {
-          setLoading(false);
-          alert(t("alertUsernameError") + updateError.message);
-          return;
+    const {data, error} = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: cleanUsername
         }
       }
+    });
 
+    if (error) {
       setLoading(false);
-      alert(t("alertCreated"));
-      window.location.href = "/";
+      alert(t("alertRegisterError") + error.message);
+      return;
     }
+
+    const user = data.user;
+
+    if (!user) {
+      setLoading(false);
+      alert(t("alertRegisterError") + "User konnte nicht erstellt werden.");
+      return;
+    }
+
+    // Optional: falls du eine profiles-Tabelle nutzt
+    const {error: profileError} = await supabase.from("profiles").upsert({
+      id: user.id,
+      username: cleanUsername
+    });
+
+    setLoading(false);
+
+    if (profileError) {
+      alert(t("alertUsernameError") + profileError.message);
+      return;
+    }
+
+    alert(t("alertCreated"));
+    window.location.href = "/";
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center text-white">
-      <div className="w-full max-w-md rounded-3xl bg-zinc-900 p-8 border border-zinc-800">
-        <h1 className="text-3xl font-bold mb-6 text-center">
+      <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
+        <h1 className="mb-6 text-center text-3xl font-bold">
           {isLogin ? t("loginTitle") : t("registerTitle")}
         </h1>
 
@@ -84,7 +96,7 @@ export default function AuthPage() {
               placeholder={t("usernamePlaceholder")}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 rounded-xl bg-zinc-800 outline-none"
+              className="w-full rounded-xl bg-zinc-800 p-3 outline-none"
             />
           )}
 
@@ -93,7 +105,7 @@ export default function AuthPage() {
             placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 rounded-xl bg-zinc-800 outline-none"
+            className="w-full rounded-xl bg-zinc-800 p-3 outline-none"
           />
 
           <input
@@ -101,13 +113,13 @@ export default function AuthPage() {
             placeholder={t("passwordPlaceholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 rounded-xl bg-zinc-800 outline-none"
+            className="w-full rounded-xl bg-zinc-800 p-3 outline-none"
           />
 
           <button
             onClick={handleAuth}
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-white text-black font-semibold disabled:opacity-50"
+            className="w-full rounded-xl bg-white py-3 font-semibold text-black disabled:opacity-50"
           >
             {loading
               ? t("buttonLoading")
@@ -118,7 +130,7 @@ export default function AuthPage() {
 
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="w-full py-3 rounded-xl bg-zinc-800"
+            className="w-full rounded-xl bg-zinc-800 py-3"
           >
             {isLogin ? t("switchToRegister") : t("switchToLogin")}
           </button>
