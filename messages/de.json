@@ -11,10 +11,26 @@
     "tagline": "Gaming Clips • Battles • Rankings",
     "accountInfo": "Kontoinformationen"
   },
+
+  "Home": {
+    "eyebrow": "Gaming Clips • Battles • Rankings",
+    "titleA": "Willkommen bei",
+    "titleB": "ClipBattle",
+    "subtitle": "Lade deine besten Gaming Clips hoch, tritt gegen andere Creator an und zeig wer den krassesten Clip hat.",
+    "battle": "Battle starten",
+    "upload": "Clip hochladen",
+    "stat1Label": "Battles",
+    "stat1Value": "24/7",
+    "stat2Label": "Community",
+    "stat2Value": "Aktiv",
+    "stat3Label": "Ziel",
+    "stat3Value": "Top Clip"
+  },
+
   "Feed": {
     "badge": "🔥 Community Feed",
     "title": "Alle Clips",
-    "subtitle": "Entdecke die neuesten und besten Gaming Clips aus der Community.",
+    "subtitle": "Entdecke die neuesten und besten Gaming Clips.",
     "loading": "Clips werden geladen...",
     "empty": "Noch keine Clips vorhanden.",
     "emptyTitle": "Noch keine Clips",
@@ -24,10 +40,11 @@
     "gameFallback": "Unbekanntes Game",
     "unknownUser": "Unbekannt"
   },
+
   "Battle": {
     "badge": "⚔️ Battle Arena",
     "title": "Zwei Clips. Eine Entscheidung.",
-    "subtitle": "Hör rein, schau dir beide Clips an und vote für den besseren Moment.",
+    "subtitle": "Schau dir beide Clips an und vote für den besseren.",
     "newRound": "Neue Runde",
     "newRoundShort": "Neue Runde",
     "pageTitle": "Battle",
@@ -36,11 +53,13 @@
     "emptyState": "Es sind noch nicht genug Clips vorhanden.",
     "unknownUser": "Unbekannt"
   },
+
   "Leaderboard": {
     "loading": "Leaderboard wird geladen...",
     "loadError": "Leaderboard konnte nicht geladen werden.",
     "empty": "Noch keine Clips vorhanden."
   },
+
   "Account": {
     "section": "Account",
     "title": "Kontoinformationen",
@@ -48,12 +67,12 @@
     "username": "Username",
     "email": "E-Mail",
     "deleteTitle": "Konto löschen",
-    "deleteText": "Dein Konto und alle Daten werden gelöscht.",
+    "deleteText": "Dein Konto und alle Daten werden dauerhaft gelöscht.",
     "deleteButton": "Konto löschen",
     "deleting": "Wird gelöscht...",
-    "confirmDelete": "Willst du dein Konto wirklich löschen?",
+    "confirmDelete": "Willst du dein Konto wirklich dauerhaft löschen?",
     "notLoggedIn": "Nicht eingeloggt",
-    "deleteSuccess": "Konto gelöscht",
+    "deleteSuccess": "Konto erfolgreich gelöscht",
     "deleteError": "Fehler beim Löschen"
   }
 }
