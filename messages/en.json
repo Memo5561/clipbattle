@@ -69,17 +69,18 @@
 },
 
   "Battle": {
-    "badge": "⚔️ Battle Arena",
-    "title": "Two clips. One decision.",
-    "subtitle": "Watch and vote.",
-    "newRound": "New round",
-    "newRoundShort": "New round",
-    "pageTitle": "Battle",
-    "loading": "Loading...",
-    "loadError": "Error loading.",
-    "emptyState": "Not enough clips.",
-    "unknownUser": "Unknown"
-  },
+  "badge": "⚔️ Battle Arena",
+  "title": "Two clips. One decision.",
+  "subtitle": "Watch and vote.",
+  "newRound": "New round",
+  "newRoundShort": "New round",
+  "pageTitle": "Battle",
+  "loading": "Loading battle...",
+  "loadError": "Battle could not be loaded.",
+  "emptyState": "There are not enough clips for a battle yet.",
+  "unknownUser": "Unknown",
+  "voteError": "Vote error: "
+},
 
   "Leaderboard": {
     "loading": "Loading...",
