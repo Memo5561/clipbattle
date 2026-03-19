@@ -13,60 +13,46 @@
   },
 
   "Home": {
-    "eyebrow": "Gaming Clips • Battles • Rankings",
-    "titleA": "Welcome to",
-    "titleB": "ClipBattle",
-    "subtitle": "Upload your clips and compete.",
-
-    "battle": "Start battle",
-    "upload": "Upload clip",
-
-    "stat1Label": "Battles",
-    "stat1Value": "24/7",
-    "stat2Label": "Community",
-    "stat2Value": "Active",
-    "stat3Label": "Goal",
-    "stat3Value": "Top Clip",
-
-    "previewBadge": "Battle Preview",
-    "previewTitle": "What it feels like",
-    "previewLive": "Live",
-
-    "clipATitle": "Epic Sniper Flick",
-    "clipAGame": "Fortnite",
-    "clipAUser": "Posted by: PlayerOne",
-
-    "clipBTitle": "Insane Clutch",
-    "clipBGame": "Warzone",
-    "clipBUser": "Posted by: King55",
-
-    "previewLeft": "58% Clip A",
-    "previewRight": "42% Clip B",
-
-    "whyBadge": "Why?",
-    "whyTitle": "More than feed",
-
-    "why1Title": "Comparison",
-    "why1Text": "Clips compete.",
-
-    "why2Title": "Ranking",
-    "why2Text": "Climb.",
-
-    "why3Title": "Community",
-    "why3Text": "Engagement.",
-
-    "featuresBadge": "Features",
-    "featuresTitle": "Everything you need",
-
-    "feature1Title": "Upload",
-    "feature1Text": "Share clips.",
-
-    "feature2Title": "Battle",
-    "feature2Text": "Fight.",
-
-    "feature3Title": "Leaderboard",
-    "feature3Text": "Win."
-  },
+  "eyebrow": "Gaming Clips • Battles • Rankings",
+  "titleA": "Welcome to",
+  "titleB": "ClipBattle",
+  "subtitle": "Upload your best gaming clips, compete in direct battles against other creators and show the community who really has the craziest clip.",
+  "battle": "Start battle",
+  "upload": "Upload clip",
+  "stat1Label": "Battles",
+  "stat1Value": "24/7",
+  "stat2Label": "Community",
+  "stat2Value": "Active",
+  "stat3Label": "Goal",
+  "stat3Value": "Top Clip",
+  "previewBadge": "Battle Preview",
+  "previewTitle": "What ClipBattle feels like",
+  "previewLive": "Live feeling",
+  "clipATitle": "Epic Sniper Flick",
+  "clipAGame": "Fortnite",
+  "clipAUser": "Posted by: PlayerOne",
+  "clipBTitle": "Insane Clutch Moment",
+  "clipBGame": "Warzone",
+  "clipBUser": "Posted by: King55",
+  "previewLeft": "58% Clip A",
+  "previewRight": "42% Clip B",
+  "whyBadge": "Why ClipBattle?",
+  "whyTitle": "More than just a normal feed",
+  "why1Title": "Creator vs Creator",
+  "why1Text": "Your clips are not only watched, they are directly compared with others.",
+  "why2Title": "Rankings & Visibility",
+  "why2Text": "The better your clip performs, the higher you rise on the leaderboard.",
+  "why3Title": "Stronger Community",
+  "why3Text": "Battles create more interaction, more tension and more returning users.",
+  "featuresBadge": "Features",
+  "featuresTitle": "Everything you need for viral clip battles",
+  "feature1Title": "Upload clips",
+  "feature1Text": "Share your best gaming moments with the community in seconds.",
+  "feature2Title": "Direct battles",
+  "feature2Text": "Two clips compete against each other — the community decides.",
+  "feature3Title": "Leaderboard",
+  "feature3Text": "The best clips rise to the top and get maximum attention."
+},
 
   "Feed": {
     "badge": "🔥 Community Feed",
