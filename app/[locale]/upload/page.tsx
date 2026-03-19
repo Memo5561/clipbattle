@@ -158,13 +158,9 @@ export default function UploadPage() {
             {t("badge")}
           </p>
 
-          <h1 className="text-3xl font-bold md:text-4xl">
-            {t("title")}
-          </h1>
+          <h1 className="text-3xl font-bold md:text-4xl">{t("title")}</h1>
 
-          <p className="mt-2 text-zinc-400">
-            {t("subtitle")}
-          </p>
+          <p className="mt-2 text-zinc-400">{t("subtitle")}</p>
         </div>
 
         <div className="space-y-6">
@@ -196,9 +192,9 @@ export default function UploadPage() {
                     key={game.id}
                     type="button"
                     onClick={() => setSelectedGame(game)}
-                    className={`overflow-hidden rounded-2xl border text-left transition ${
+                    className={`overflow-hidden rounded-2xl border text-left transition active:scale-95 ${
                       isActive
-                        ? "border-purple-500 bg-purple-500/10 ring-2 ring-purple-500/30"
+                        ? "scale-[1.02] border-purple-500 bg-purple-500/20 ring-2 ring-purple-500 shadow-lg shadow-purple-500/30"
                         : "border-zinc-800 bg-black/30 hover:border-zinc-600 hover:bg-white/5"
                     }`}
                   >
@@ -209,6 +205,12 @@ export default function UploadPage() {
                         fill
                         className="object-cover"
                       />
+
+                      {isActive && (
+                        <div className="absolute right-2 top-2 rounded-full bg-purple-500 px-2 py-1 text-xs font-bold text-white shadow-md">
+                          ✓
+                        </div>
+                      )}
                     </div>
 
                     <div className="px-3 py-3">
