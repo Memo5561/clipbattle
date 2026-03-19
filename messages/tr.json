@@ -55,16 +55,18 @@
 },
 
   "Feed": {
-    "badge": "🔥 Akış",
-    "title": "Klipler",
-    "subtitle": "Keşfet.",
-    "loading": "Yükleniyor...",
-    "empty": "Yok.",
-    "postedBy": "Paylaşan",
-    "votes": "Oy",
-    "unknownUser": "Bilinmiyor",
-    "gameFallback": "Bilinmiyor"
-  },
+  "badge": "🔥 Topluluk Akışı",
+  "title": "Tüm klipler",
+  "subtitle": "Topluluktaki en yeni ve en iyi oyun kliplerini keşfet.",
+  "loading": "Klipler yükleniyor...",
+  "empty": "Henüz klip yok.",
+  "emptyTitle": "Henüz klip yok",
+  "emptyText": "Biri bir şey yüklediğinde klipler burada görünecek.",
+  "postedBy": "Paylaşan",
+  "votes": "Oy",
+  "gameFallback": "Bilinmeyen oyun",
+  "unknownUser": "Bilinmiyor"
+},
 
   "Battle": {
     "badge": "⚔️ Arena",
