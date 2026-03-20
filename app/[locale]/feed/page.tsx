@@ -336,12 +336,12 @@ export default function FeedPage() {
                     <p className="mt-1 text-sm text-zinc-400">{clip.game}</p>
                   )}
 
-                  <div className="mt-2 flex items-center gap-3">
+                  <div className="mt-3 flex items-center gap-3">
                     <Link
                       href={`/profile/${clip.user_id}`}
-                      className="text-sm text-zinc-300 hover:underline"
+                      className="inline-flex items-center rounded-full border border-white/15 bg-black/35 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm transition hover:scale-105 hover:border-white/30 hover:bg-black/50"
                     >
-                      {clip.username || t("unknownUser")}
+                      @{clip.username || t("unknownUser")}
                     </Link>
 
                     {clip.user_id && (
