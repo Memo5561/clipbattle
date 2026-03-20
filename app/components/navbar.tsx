@@ -71,6 +71,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [menuOpenDesktop, setMenuOpenDesktop] = useState(false);
   const [menuOpenMobile, setMenuOpenMobile] = useState(false);
 
@@ -96,6 +97,7 @@ export default function Navbar() {
       if (!mounted) return;
 
       setDisplayName(user?.user_metadata?.username ?? "User");
+      setUserId(user?.id ?? null);
     };
 
     loadUser();
@@ -106,6 +108,7 @@ export default function Navbar() {
       if (!mounted) return;
 
       setDisplayName(session?.user?.user_metadata?.username ?? "User");
+      setUserId(session?.user?.id ?? null);
     });
 
     return () => {
@@ -154,6 +157,7 @@ export default function Navbar() {
     setMenuOpenDesktop(false);
     setMenuOpenMobile(false);
     setDisplayName(null);
+    setUserId(null);
     router.replace("/");
     router.refresh();
   };
@@ -166,9 +170,11 @@ export default function Navbar() {
   };
 
   const handleGoToAccount = () => {
+    if (!userId) return;
+
     setMenuOpenDesktop(false);
     setMenuOpenMobile(false);
-    router.push("/account");
+    router.push(`/profile/${userId}`);
     router.refresh();
   };
 
