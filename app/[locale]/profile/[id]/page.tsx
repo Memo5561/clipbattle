@@ -80,12 +80,23 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen px-4 py-10 text-white">
       <div className="mx-auto max-w-6xl space-y-8">
+        <Link
+          href="/feed"
+          className="inline-block text-sm text-zinc-400 transition hover:text-white"
+        >
+          ← {t("backToFeed")}
+        </Link>
+
         <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 backdrop-blur-xl">
           <p className="mb-3 inline-block rounded-full border border-zinc-700 bg-zinc-800 px-4 py-1 text-xs text-zinc-400">
             {t("profile")}
           </p>
 
-          <h1 className="text-3xl font-bold md:text-4xl">@{username}</h1>
+          <h1 className="text-3xl font-bold md:text-4xl">
+            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              @{username}
+            </span>
+          </h1>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-2xl border border-zinc-800 bg-black/30 p-4">
@@ -144,7 +155,7 @@ export default function ProfilePage() {
                     </p>
                   </div>
 
-                  <div className="rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-300 w-fit">
+                  <div className="w-fit rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-300">
                     ❤️ {clip.votes} {t("votes")}
                   </div>
                 </div>
