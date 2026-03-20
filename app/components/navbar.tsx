@@ -105,9 +105,7 @@ export default function Navbar() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
 
-      setDisplayName(
-        session?.user?.user_metadata?.username ?? "User"
-      );
+      setDisplayName(session?.user?.user_metadata?.username ?? "User");
     });
 
     return () => {
@@ -213,24 +211,43 @@ export default function Navbar() {
                 </button>
 
                 {menuOpenDesktop && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-zinc-800 bg-zinc-950 p-3 shadow-2xl">
+                    <div className="rounded-xl px-3 py-2">
+                      <p className="text-sm font-semibold text-white">
+                        @{displayName}
+                      </p>
+                    </div>
+
+                    <div className="my-2 border-t border-zinc-800" />
+
+                    <div className="px-3 pb-2">
+                      <p className="text-xs uppercase tracking-wide text-zinc-500">
+                        Mein Account
+                      </p>
+                    </div>
+
                     <button
+                      type="button"
                       onClick={handleGoToAccount}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
                       {t("accountInfo")}
                     </button>
 
                     <button
+                      type="button"
                       onClick={handleGoToMyClips}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
                       {t("myClips")}
                     </button>
 
+                    <div className="my-2 border-t border-zinc-800" />
+
                     <button
+                      type="button"
                       onClick={handleLogout}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-red-400 hover:bg-zinc-900 hover:text-red-300"
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-red-400 transition hover:bg-zinc-900 hover:text-red-300"
                     >
                       {t("logout")}
                     </button>
@@ -256,28 +273,43 @@ export default function Navbar() {
                 </button>
 
                 {menuOpenMobile && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl">
-                    <div className="mb-1 rounded-xl px-4 py-2 text-sm text-zinc-400">
-                      {mobileLabel}
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-zinc-800 bg-zinc-950 p-3 shadow-2xl">
+                    <div className="rounded-xl px-3 py-2">
+                      <p className="text-sm font-semibold text-white">
+                        {mobileLabel}
+                      </p>
+                    </div>
+
+                    <div className="my-2 border-t border-zinc-800" />
+
+                    <div className="px-3 pb-2">
+                      <p className="text-xs uppercase tracking-wide text-zinc-500">
+                        Mein Account
+                      </p>
                     </div>
 
                     <button
+                      type="button"
                       onClick={handleGoToAccount}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
                       {t("accountInfo")}
                     </button>
 
                     <button
+                      type="button"
                       onClick={handleGoToMyClips}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
                       {t("myClips")}
                     </button>
 
+                    <div className="my-2 border-t border-zinc-800" />
+
                     <button
+                      type="button"
                       onClick={handleLogout}
-                      className="block w-full rounded-xl px-4 py-2 text-left text-sm text-red-400 hover:bg-zinc-900 hover:text-red-300"
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-red-400 transition hover:bg-zinc-900 hover:text-red-300"
                     >
                       {t("logout")}
                     </button>
