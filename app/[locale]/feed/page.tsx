@@ -16,6 +16,7 @@ type Clip = {
   votes: number;
   username: string | null;
   user_id: string;
+  created_at?: string;
 };
 
 export default function FeedPage() {
@@ -78,7 +79,7 @@ export default function FeedPage() {
       setUserId(user?.id ?? null);
 
       const {data: clipsData, error: clipsError} = await supabase
-        .from("clips")
+        .from("clips_with_likes")
         .select("*")
         .order("created_at", {ascending: false});
 
@@ -181,16 +182,7 @@ export default function FeedPage() {
           c.id === clip.id ? {...c, votes: c.votes + 1} : c
         )
       );
-    } else {
-      setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
-      setClips((prev) =>
-        prev.map((c) =>
-          c.id === clip.id ? {...c, votes: Math.max(c.votes - 1, 0)} : c
-        )
-      );
-    }
 
-    if (!isLiked) {
       const {error: likeError} = await supabase.from("clip_likes").insert({
         clip_id: clip.id,
         user_id: userId
@@ -205,38 +197,15 @@ export default function FeedPage() {
             c.id === clip.id ? {...c, votes: Math.max(c.votes - 1, 0)} : c
           )
         );
-
-        setLikingId(null);
-        likeLockRef.current[clip.id] = false;
-        return;
-      }
-
-      const {error: votesError} = await supabase
-        .from("clips")
-        .update({votes: clip.votes + 1})
-        .eq("id", clip.id);
-
-      if (votesError) {
-        console.error("Votes update error:", votesError.message);
-
-        setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
-        setClips((prev) =>
-          prev.map((c) =>
-            c.id === clip.id ? {...c, votes: Math.max(c.votes - 1, 0)} : c
-          )
-        );
-
-        await supabase
-          .from("clip_likes")
-          .delete()
-          .eq("clip_id", clip.id)
-          .eq("user_id", userId);
-
-        setLikingId(null);
-        likeLockRef.current[clip.id] = false;
-        return;
       }
     } else {
+      setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
+      setClips((prev) =>
+        prev.map((c) =>
+          c.id === clip.id ? {...c, votes: Math.max(c.votes - 1, 0)} : c
+        )
+      );
+
       const {error: unlikeError} = await supabase
         .from("clip_likes")
         .delete()
@@ -252,37 +221,6 @@ export default function FeedPage() {
             c.id === clip.id ? {...c, votes: c.votes + 1} : c
           )
         );
-
-        setLikingId(null);
-        likeLockRef.current[clip.id] = false;
-        return;
-      }
-
-      const newVotes = Math.max(clip.votes - 1, 0);
-
-      const {error: votesError} = await supabase
-        .from("clips")
-        .update({votes: newVotes})
-        .eq("id", clip.id);
-
-      if (votesError) {
-        console.error("Votes update error:", votesError.message);
-
-        setLikedClipIds((prev) => [...prev, clip.id]);
-        setClips((prev) =>
-          prev.map((c) =>
-            c.id === clip.id ? {...c, votes: c.votes + 1} : c
-          )
-        );
-
-        await supabase.from("clip_likes").insert({
-          clip_id: clip.id,
-          user_id: userId
-        });
-
-        setLikingId(null);
-        likeLockRef.current[clip.id] = false;
-        return;
       }
     }
 
