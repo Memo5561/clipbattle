@@ -31,7 +31,7 @@ export default function FeedPage() {
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
-  const lastTapRef = useRef<number>(0);
+  const lastTapMap = useRef<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const playActiveVideo = useCallback(() => {
@@ -282,19 +282,23 @@ export default function FeedPage() {
 
   const handleDoubleTap = (clipId: string) => {
     const now = Date.now();
+    const lastTap = lastTapMap.current[clipId] || 0;
 
-    if (now - lastTapRef.current < 300) {
+    if (now - lastTap < 300) {
       const clip = clips.find((c) => c.id === clipId);
 
-      if (clip && !likedClipIds.includes(clip.id)) {
+      if (clip && !likedClipIds.includes(clip.id) && !likingId) {
         handleLike(clip);
       }
 
       setShowHeart(clipId);
-      setTimeout(() => setShowHeart(null), 450);
+      setTimeout(() => setShowHeart(null), 400);
+
+      lastTapMap.current[clipId] = 0;
+      return;
     }
 
-    lastTapRef.current = now;
+    lastTapMap.current[clipId] = now;
   };
 
   if (loading) {
