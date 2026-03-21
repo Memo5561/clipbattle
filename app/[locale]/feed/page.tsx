@@ -5,7 +5,7 @@ import {useTranslations} from "next-intl";
 import {Link} from "../../../i18n/navigation";
 import {supabase} from "../../../lib/supabase";
 import ProtectedPage from "../../components/protected-page";
-import FriendRequestButton from "../../components/friend-request-button";
+import FollowButton from "../../components/follow-button";
 import {Heart, Volume2, VolumeX} from "lucide-react";
 
 type Clip = {
@@ -169,7 +169,6 @@ export default function FeedPage() {
     const isLiked = likedClipIds.includes(clip.id);
     setLikingId(clip.id);
 
-    // ⚡ Optimistic UI
     if (!isLiked) {
       setLikedClipIds((prev) => [...prev, clip.id]);
       setClips((prev) =>
@@ -195,7 +194,6 @@ export default function FeedPage() {
       if (likeError) {
         console.error("Like insert error:", likeError.message);
 
-        // rollback
         setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
         setClips((prev) =>
           prev.map((c) =>
@@ -215,7 +213,6 @@ export default function FeedPage() {
       if (votesError) {
         console.error("Votes update error:", votesError.message);
 
-        // rollback
         setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
         setClips((prev) =>
           prev.map((c) =>
@@ -242,7 +239,6 @@ export default function FeedPage() {
       if (unlikeError) {
         console.error("Like delete error:", unlikeError.message);
 
-        // rollback
         setLikedClipIds((prev) => [...prev, clip.id]);
         setClips((prev) =>
           prev.map((c) =>
@@ -264,7 +260,6 @@ export default function FeedPage() {
       if (votesError) {
         console.error("Votes update error:", votesError.message);
 
-        // rollback
         setLikedClipIds((prev) => [...prev, clip.id]);
         setClips((prev) =>
           prev.map((c) =>
@@ -423,7 +418,9 @@ export default function FeedPage() {
                     </Link>
 
                     {clip.user_id && (
-                      <FriendRequestButton targetUserId={clip.user_id} />
+                      <div className="ml-1">
+                        <FollowButton targetUserId={clip.user_id} />
+                      </div>
                     )}
                   </div>
                 </div>
