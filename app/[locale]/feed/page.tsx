@@ -32,6 +32,7 @@ export default function FeedPage() {
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const lastTapMap = useRef<Record<string, number>>({});
+  const likeLockRef = useRef<Record<string, boolean>>({});
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const playActiveVideo = useCallback(() => {
@@ -164,10 +165,14 @@ export default function FeedPage() {
   };
 
   const handleLike = async (clip: Clip) => {
-    if (!userId || likingId) return;
+    if (!userId) return;
+    if (likingId) return;
+    if (likeLockRef.current[clip.id]) return;
+
+    likeLockRef.current[clip.id] = true;
+    setLikingId(clip.id);
 
     const isLiked = likedClipIds.includes(clip.id);
-    setLikingId(clip.id);
 
     if (!isLiked) {
       setLikedClipIds((prev) => [...prev, clip.id]);
@@ -202,6 +207,7 @@ export default function FeedPage() {
         );
 
         setLikingId(null);
+        likeLockRef.current[clip.id] = false;
         return;
       }
 
@@ -227,6 +233,7 @@ export default function FeedPage() {
           .eq("user_id", userId);
 
         setLikingId(null);
+        likeLockRef.current[clip.id] = false;
         return;
       }
     } else {
@@ -247,6 +254,7 @@ export default function FeedPage() {
         );
 
         setLikingId(null);
+        likeLockRef.current[clip.id] = false;
         return;
       }
 
@@ -273,21 +281,28 @@ export default function FeedPage() {
         });
 
         setLikingId(null);
+        likeLockRef.current[clip.id] = false;
         return;
       }
     }
 
     setLikingId(null);
+    likeLockRef.current[clip.id] = false;
   };
 
-  const handleDoubleTap = (clipId: string) => {
+  const handleVideoTouchEnd = (clipId: string) => {
     const now = Date.now();
     const lastTap = lastTapMap.current[clipId] || 0;
 
-    if (now - lastTap < 300) {
+    if (now - lastTap < 280) {
       const clip = clips.find((c) => c.id === clipId);
 
-      if (clip && !likedClipIds.includes(clip.id) && !likingId) {
+      if (
+        clip &&
+        !likedClipIds.includes(clip.id) &&
+        !likingId &&
+        !likeLockRef.current[clip.id]
+      ) {
         handleLike(clip);
       }
 
@@ -353,7 +368,7 @@ export default function FeedPage() {
                   loop
                   playsInline
                   preload="metadata"
-                  onClick={() => handleDoubleTap(clip.id)}
+                  onTouchEnd={() => handleVideoTouchEnd(clip.id)}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
 
