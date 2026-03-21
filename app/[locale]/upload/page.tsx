@@ -13,36 +13,12 @@ type GameOption = {
 };
 
 const gameOptions: GameOption[] = [
-  {
-    id: "fortnite",
-    name: "Fortnite",
-    image: "/games/fortnite.jpg"
-  },
-  {
-    id: "warzone",
-    name: "Warzone",
-    image: "/games/warzone.jpg"
-  },
-  {
-    id: "valorant",
-    name: "Valorant",
-    image: "/games/valorant.jpg"
-  },
-  {
-    id: "fifa",
-    name: "EA Sports FC",
-    image: "/games/fifa.jpg"
-  },
-  {
-    id: "minecraft",
-    name: "Minecraft",
-    image: "/games/minecraft.jpg"
-  },
-  {
-    id: "gta",
-    name: "GTA",
-    image: "/games/gta.jpg"
-  }
+  {id: "fortnite", name: "Fortnite", image: "/games/fortnite.jpg"},
+  {id: "warzone", name: "Warzone", image: "/games/warzone.jpg"},
+  {id: "valorant", name: "Valorant", image: "/games/valorant.jpg"},
+  {id: "fifa", name: "EA Sports FC", image: "/games/fifa.jpg"},
+  {id: "minecraft", name: "Minecraft", image: "/games/minecraft.jpg"},
+  {id: "gta", name: "GTA", image: "/games/gta.jpg"}
 ];
 
 export default function UploadPage() {
@@ -52,21 +28,18 @@ export default function UploadPage() {
   const [title, setTitle] = useState("");
   const [selectedGame, setSelectedGame] = useState<GameOption | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [fileInfo, setFileInfo] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
     const checkUser = async () => {
-      const {
-        data: {user}
-      } = await supabase.auth.getUser();
-
-      if (!mounted) return;
+      const {data: {user}} = await supabase.auth.getUser();
 
       if (!user) {
-        setCheckingAuth(false);
         router.replace("/auth");
         return;
       }
@@ -75,11 +48,30 @@ export default function UploadPage() {
     };
 
     checkUser();
-
-    return () => {
-      mounted = false;
-    };
   }, [router]);
+
+  // FILE HANDLING
+  const handleFileChange = (f: File | null) => {
+    if (!f) return;
+
+    // TYPE CHECK
+    if (!f.type.startsWith("video/")) {
+      alert("Nur Videos erlaubt");
+      return;
+    }
+
+    // SIZE CHECK (max 100MB)
+    if (f.size > 100 * 1024 * 1024) {
+      alert("Max 100MB erlaubt");
+      return;
+    }
+
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+
+    const sizeMB = (f.size / (1024 * 1024)).toFixed(2);
+    setFileInfo(`${f.name} • ${sizeMB} MB`);
+  };
 
   const handleUpload = async () => {
     if (!title || !selectedGame || !file) {
@@ -88,188 +80,153 @@ export default function UploadPage() {
     }
 
     setLoading(true);
+    setProgress(10);
 
-    const {
-      data: {user}
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      alert(t("alertLogin"));
-      setLoading(false);
-      router.replace("/auth");
-      return;
-    }
+    const {data: {user}} = await supabase.auth.getUser();
 
     const username =
-      user.user_metadata?.username ||
-      user.email?.split("@")[0] ||
+      user?.user_metadata?.username ||
+      user?.email?.split("@")[0] ||
       "User";
 
     const fileName = `${Date.now()}-${file.name}`;
+
+    setProgress(30);
 
     const {error: uploadError} = await supabase.storage
       .from("clips")
       .upload(fileName, file);
 
     if (uploadError) {
-      alert(t("alertUploadError") + uploadError.message);
+      alert(uploadError.message);
       setLoading(false);
       return;
     }
 
-    const {data: publicUrlData} = supabase.storage
+    setProgress(70);
+
+    const {data} = supabase.storage
       .from("clips")
       .getPublicUrl(fileName);
 
-    const videoUrl = publicUrlData.publicUrl;
-
-    const {error: insertError} = await supabase.from("clips").insert({
+    await supabase.from("clips").insert({
       title,
       game: selectedGame.name,
-      video_url: videoUrl,
+      video_url: data.publicUrl,
       votes: 0,
-      user_id: user.id,
+      user_id: user?.id,
       username
     });
 
-    if (insertError) {
-      alert(t("alertInsertError") + insertError.message);
-      setLoading(false);
-      return;
-    }
+    setProgress(100);
 
-    alert(t("alertSuccess"));
-
-    setTitle("");
-    setSelectedGame(null);
-    setFile(null);
-    setLoading(false);
+    setTimeout(() => {
+      router.push("/feed");
+    }, 600);
   };
 
   if (checkingAuth) {
     return (
       <div className="flex min-h-screen items-center justify-center text-white">
-        {t("buttonLoading")}
+        Loading...
       </div>
     );
   }
 
+  const isReady = title && selectedGame && file;
+
   return (
-    <div className="min-h-screen text-white">
-      <section className="mx-auto max-w-3xl rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 backdrop-blur-xl">
-        <div className="mb-6">
-          <p className="mb-2 inline-block rounded-full border border-zinc-700 bg-zinc-800 px-4 py-1 text-xs text-zinc-400">
-            {t("badge")}
-          </p>
+    <div className="min-h-screen bg-black text-white px-4 py-10">
+      <div className="mx-auto max-w-3xl space-y-8">
 
-          <h1 className="text-3xl font-bold md:text-4xl">
-            {t("title")}
-          </h1>
-
-          <p className="mt-2 text-zinc-400">
-            {t("subtitle")}
-          </p>
+        {/* HEADER */}
+        <div>
+          <h1 className="text-4xl font-black">🚀 Upload Clip</h1>
+          <p className="text-zinc-400">Poste deinen besten Moment</p>
         </div>
 
-        <div className="space-y-6">
-          <div>
-            <label className="mb-2 block text-sm text-zinc-400">
-              {t("labelTitle")}
-            </label>
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl space-y-6">
 
-            <input
-              type="text"
-              placeholder={t("placeholderTitle")}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-2xl border border-zinc-800 bg-black/40 px-4 py-3 outline-none transition focus:border-purple-500"
-            />
+          {/* TITLE */}
+          <input
+            type="text"
+            placeholder="Titel..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none focus:border-purple-500"
+          />
+
+          {/* GAME */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {gameOptions.map((game) => {
+              const active = selectedGame?.id === game.id;
+
+              return (
+                <button
+                  key={game.id}
+                  onClick={() => setSelectedGame(game)}
+                  className={`rounded-2xl overflow-hidden border transition ${
+                    active
+                      ? "border-purple-500 ring-2 ring-purple-500"
+                      : "border-white/10 hover:border-white/30"
+                  }`}
+                >
+                  <div className="relative aspect-[4/3]">
+                    <Image src={game.image} alt={game.name} fill className="object-cover" />
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
-          <div>
-            <label className="mb-3 block text-sm text-zinc-400">
-              {t("labelGame")}
-            </label>
-
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {gameOptions.map((game) => {
-                const isActive = selectedGame?.id === game.id;
-
-                return (
-                  <button
-                    key={game.id}
-                    type="button"
-                    onClick={() => setSelectedGame(game)}
-                    className={`overflow-hidden rounded-2xl border text-left transition active:scale-95 ${
-                      isActive
-                        ? "scale-[1.02] border-purple-500 bg-purple-500/20 ring-2 ring-purple-500 shadow-lg shadow-purple-500/30"
-                        : "border-zinc-800 bg-black/30 hover:border-zinc-600 hover:bg-white/5"
-                    }`}
-                  >
-                    <div className="relative aspect-[4/3] w-full bg-zinc-800">
-                      <Image
-                        src={game.image}
-                        alt={game.name}
-                        fill
-                        className="object-cover"
-                      />
-
-                      {isActive && (
-                        <div className="absolute right-2 top-2 rounded-full bg-purple-500 px-2 py-1 text-xs font-bold text-white shadow-md">
-                          ✓
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="px-3 py-3">
-                      <p className="text-sm font-semibold text-white">
-                        {game.name}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {selectedGame && (
-              <p className="mt-3 text-sm text-zinc-400">
-                <span className="font-semibold text-white">
-                  {selectedGame.name}
-                </span>
-              </p>
+          {/* FILE */}
+          <label className="block cursor-pointer rounded-2xl border border-dashed border-white/20 p-6 text-center hover:border-purple-500">
+            {preview ? (
+              <>
+                <video src={preview} className="w-full rounded-xl mb-2" controls />
+                <p className="text-xs text-zinc-400">{fileInfo}</p>
+              </>
+            ) : (
+              <p className="text-zinc-400">📁 Klick um Video auszuwählen</p>
             )}
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm text-zinc-400">
-              {t("labelVideo")}
-            </label>
 
             <input
               type="file"
               accept="video/*"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="w-full rounded-2xl border border-zinc-800 bg-black/40 px-4 py-3 text-zinc-300"
+              hidden
+              onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
             />
-          </div>
+          </label>
 
+          {/* PROGRESS */}
+          {loading && (
+            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all"
+                style={{width: `${progress}%`}}
+              />
+            </div>
+          )}
+
+          {/* BUTTON */}
           <button
-            type="button"
             onClick={handleUpload}
-            disabled={loading}
-            className="w-full rounded-2xl bg-white py-3 font-semibold text-black transition hover:scale-[1.01] hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={!isReady || loading}
+            className={`w-full rounded-2xl py-3 font-bold transition ${
+              isReady
+                ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:scale-[1.02]"
+                : "bg-zinc-800 text-zinc-500"
+            }`}
           >
-            {loading ? t("buttonLoading") : t("buttonIdle")}
+            {loading ? `Uploading... ${progress}%` : "Upload 🚀"}
           </button>
 
-          <Link
-            href="/"
-            className="block text-center text-sm text-zinc-400 transition hover:text-white"
-          >
-            {t("backHome")}
+          <Link href="/" className="block text-center text-zinc-400 hover:text-white">
+            Zurück
           </Link>
+
         </div>
-      </section>
+      </div>
     </div>
   );
 }
