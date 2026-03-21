@@ -23,52 +23,27 @@ export default function BattlePage() {
   const [loading, setLoading] = useState(true);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const [voting, setVoting] = useState(false);
-  const [errorText, setErrorText] = useState<string | null>(null);
-
-  const videoRefA = useRef<HTMLVideoElement>(null);
-  const videoRefB = useRef<HTMLVideoElement>(null);
-
-  const [mutedA, setMutedA] = useState(true);
-  const [mutedB, setMutedB] = useState(true);
 
   const generatePair = (list: Clip[]) => {
-    if (!list || list.length < 2) {
-      setClipA(null);
-      setClipB(null);
-      return;
-    }
+    if (!list || list.length < 2) return;
 
     const shuffled = [...list].sort(() => Math.random() - 0.5);
-    const first = shuffled[0];
-    const second = shuffled.find((clip) => clip.id !== first.id) || shuffled[1];
-
-    setClipA(first);
-    setClipB(second);
+    setClipA(shuffled[0]);
+    setClipB(shuffled[1]);
     setWinnerId(null);
   };
 
   const fetchClips = async () => {
     setLoading(true);
-    setErrorText(null);
 
-    const {data, error} = await supabase
+    const {data} = await supabase
       .from("clips")
       .select("*")
       .order("created_at", {ascending: false});
 
-    if (error) {
-      console.error("Battle load error:", error.message);
-      setErrorText(t("loadError"));
-      setClips([]);
-      setClipA(null);
-      setClipB(null);
-      setLoading(false);
-      return;
-    }
-
-    const loadedClips = (data as Clip[]) || [];
-    setClips(loadedClips);
-    generatePair(loadedClips);
+    const loaded = (data as Clip[]) || [];
+    setClips(loaded);
+    generatePair(loaded);
     setLoading(false);
   };
 
@@ -84,60 +59,22 @@ export default function BattlePage() {
 
     const newVotes = clip.votes + 1;
 
-    const {error} = await supabase
+    await supabase
       .from("clips")
       .update({votes: newVotes})
       .eq("id", clip.id);
 
-    if (error) {
-      console.error("Vote error:", error.message);
-      setVoting(false);
-      setWinnerId(null);
-      alert(t("voteError") + error.message);
-      return;
-    }
-
-    const updatedClips = clips.map((item) =>
-      item.id === clip.id ? {...item, votes: newVotes} : item
-    );
-
-    setClips(updatedClips);
-
-    if (clipA?.id === clip.id) {
-      setClipA({...clipA, votes: newVotes});
-    }
-
-    if (clipB?.id === clip.id) {
-      setClipB({...clipB, votes: newVotes});
-    }
-
     setTimeout(() => {
-      generatePair(updatedClips);
+      generatePair(clips);
       setVoting(false);
-    }, 800);
+    }, 900);
   };
 
-  if (loading) {
+  if (loading || !clipA || !clipB) {
     return (
       <ProtectedPage>
-        <div className="mt-20 text-center text-zinc-400">{t("loading")}</div>
-      </ProtectedPage>
-    );
-  }
-
-  if (errorText) {
-    return (
-      <ProtectedPage>
-        <div className="mt-20 text-center text-zinc-400">{errorText}</div>
-      </ProtectedPage>
-    );
-  }
-
-  if (!clipA || !clipB) {
-    return (
-      <ProtectedPage>
-        <div className="mt-20 px-6 text-center text-zinc-400">
-          {t("emptyState")}
+        <div className="flex h-screen items-center justify-center text-white">
+          Loading...
         </div>
       </ProtectedPage>
     );
@@ -145,174 +82,127 @@ export default function BattlePage() {
 
   return (
     <ProtectedPage>
-      <div className="mx-auto max-w-5xl space-y-2 text-white">
-        <div className="flex items-center justify-between rounded-3xl border border-zinc-800 bg-zinc-900 p-4">
-          <h1 className="text-xl font-bold">{t("pageTitle")}</h1>
+      <div className="relative min-h-screen bg-black text-white">
+
+        {/* HEADER */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-2 backdrop-blur-xl">
+          <span className="text-sm font-semibold">⚔️ Battle Arena</span>
 
           <button
-            type="button"
             onClick={() => generatePair(clips)}
-            disabled={voting}
-            className="flex items-center gap-2 rounded-xl bg-zinc-800 px-4 py-2 disabled:opacity-50"
+            className="flex items-center gap-1 text-xs text-zinc-300 hover:text-white"
           >
-            <RefreshCw size={16} />
-            {t("newRoundShort")}
+            <RefreshCw size={14} />
+            Neu
           </button>
         </div>
 
-        <SwipeCard
+        {/* CLIP A */}
+        <BattleCard
           clip={clipA}
-          videoRef={videoRefA}
-          muted={mutedA}
-          toggleMute={() => setMutedA(!mutedA)}
           onVote={() => vote(clipA)}
           isWinner={winnerId === clipA.id}
-          disabled={voting}
-          unknownUser={t("unknownUser")}
         />
 
-        <div className="text-center text-xs text-zinc-600">VS</div>
+        {/* VS */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-20">
+          <div className="text-6xl font-black text-white/10 tracking-widest">
+            VS
+          </div>
+        </div>
 
-        <SwipeCard
+        {/* CLIP B */}
+        <BattleCard
           clip={clipB}
-          videoRef={videoRefB}
-          muted={mutedB}
-          toggleMute={() => setMutedB(!mutedB)}
           onVote={() => vote(clipB)}
           isWinner={winnerId === clipB.id}
-          disabled={voting}
-          unknownUser={t("unknownUser")}
         />
       </div>
     </ProtectedPage>
   );
 }
 
-function SwipeCard({
+function BattleCard({
   clip,
-  videoRef,
-  muted,
-  toggleMute,
   onVote,
-  isWinner,
-  disabled,
-  unknownUser
+  isWinner
 }: {
   clip: Clip;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
-  muted: boolean;
-  toggleMute: () => void;
   onVote: () => void;
   isWinner: boolean;
-  disabled: boolean;
-  unknownUser: string;
 }) {
-  const [dragX, setDragX] = useState(0);
-  const [dragY, setDragY] = useState(0);
-  const [dragging, setDragging] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [drag, setDrag] = useState(0);
 
   const startX = useRef<number | null>(null);
-  const startY = useRef<number | null>(null);
-
-  const threshold = 100;
-  const progress = Math.min(dragX / threshold, 1);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (disabled) return;
-
     startX.current = e.touches[0].clientX;
-    startY.current = e.touches[0].clientY;
-    setDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (disabled) return;
-    if (startX.current === null || startY.current === null) return;
-
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-
-    const diffX = currentX - startX.current;
-    const diffY = currentY - startY.current;
-
-    setDragX(diffX > 0 ? diffX : 0);
-    setDragY(diffX > 0 ? diffY : 0);
+    if (!startX.current) return;
+    const diff = e.touches[0].clientX - startX.current;
+    if (diff > 0) setDrag(diff);
   };
 
   const handleTouchEnd = () => {
-    if (disabled) return;
-
-    if (dragX > threshold) {
-      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-        navigator.vibrate(40);
-      }
-      onVote();
-    }
-
-    setDragX(0);
-    setDragY(0);
-    setDragging(false);
+    if (drag > 120) onVote();
+    setDrag(0);
     startX.current = null;
-    startY.current = null;
   };
-
-  const rotate = Math.min(dragX * 0.06, 14);
-  const lift = Math.min(dragX * 0.08, 24);
 
   return (
     <div
-      className="relative overflow-hidden rounded-3xl border border-zinc-800 shadow-2xl"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      className="relative h-screen overflow-hidden"
       style={{
-        transform: `translateX(${dragX}px) translateY(${dragY * 0.08 - lift}px) rotate(${rotate}deg)`,
-        transition: dragging
-          ? "none"
-          : "transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)"
+        transform: `translateX(${drag}px) rotate(${drag * 0.05}deg)`
       }}
     >
+      {/* VIDEO */}
       <video
-        ref={videoRef}
         src={clip.video_url}
         autoPlay
         loop
         muted={muted}
         playsInline
-        preload="metadata"
-        className="h-[70vh] w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover"
       />
 
-      <div
-        className="absolute inset-y-0 left-0 bg-emerald-500/30"
-        style={{
-          width: "100%",
-          transform: `scaleX(${progress})`,
-          transformOrigin: "left",
-          transition: dragging ? "none" : "transform 0.15s ease-out"
-        }}
-      />
+      {/* OVERLAY */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/90" />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
-
-      <div className="absolute bottom-5 left-5">
-        <h2 className="text-2xl font-bold">{clip.title}</h2>
-        <p className="text-sm text-zinc-400">{clip.username || unknownUser}</p>
+      {/* INFO */}
+      <div className="absolute bottom-10 left-5 z-10">
+        <h2 className="text-3xl font-black">{clip.title}</h2>
+        <p className="text-zinc-400">@{clip.username || "User"}</p>
       </div>
 
+      {/* MUTE */}
       <button
-        type="button"
-        onClick={toggleMute}
-        className="absolute left-4 top-4 rounded-full bg-black/60 p-2"
+        onClick={() => setMuted(!muted)}
+        className="absolute top-6 right-5 z-10 bg-black/50 p-3 rounded-full"
       >
-        {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        {muted ? <VolumeX /> : <Volume2 />}
       </button>
 
+      {/* WINNER */}
       {isWinner && (
-        <div className="absolute inset-0 flex items-center justify-center bg-emerald-500/20">
-          <Trophy size={40} />
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="flex flex-col items-center gap-2">
+            <Trophy className="h-16 w-16 text-yellow-400 animate-bounce" />
+            <span className="text-xl font-bold">WINNER</span>
+          </div>
         </div>
       )}
+
+      {/* SWIPE HINT */}
+      <div className="absolute bottom-4 right-4 text-xs text-zinc-400">
+        👉 Swipe to vote
+      </div>
     </div>
   );
 }
