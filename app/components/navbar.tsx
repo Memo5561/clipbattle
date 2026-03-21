@@ -74,6 +74,7 @@ export default function Navbar() {
   const [userId, setUserId] = useState<string | null>(null);
   const [menuOpenDesktop, setMenuOpenDesktop] = useState(false);
   const [menuOpenMobile, setMenuOpenMobile] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const desktopMenuRef = useRef<HTMLDivElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
@@ -146,6 +147,19 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 12);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, {passive: true});
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const handleLogout = async () => {
     const {error} = await supabase.auth.signOut();
 
@@ -182,10 +196,22 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-2xl shadow-[0_8px_30px_rgba(0,0,0,0.45)]">
+      <header
+        className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+          scrolled
+            ? "border-white/10 bg-black/72 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.55)]"
+            : "border-white/5 bg-black/35 backdrop-blur-xl shadow-[0_6px_20px_rgba(0,0,0,0.28)]"
+        }`}
+      >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <Link href="/" className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 via-fuchsia-500 to-blue-500 text-base font-bold text-white shadow-[0_0_25px_rgba(139,92,246,0.5)] ring-1 ring-white/10 sm:h-11 sm:w-11 sm:text-lg">
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 via-fuchsia-500 to-blue-500 text-base font-bold text-white ring-1 ring-white/10 transition-all duration-300 sm:h-11 sm:w-11 sm:text-lg ${
+                scrolled
+                  ? "shadow-[0_0_30px_rgba(139,92,246,0.55)]"
+                  : "shadow-[0_0_20px_rgba(139,92,246,0.35)]"
+              }`}
+            >
               CB
             </div>
 
