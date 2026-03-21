@@ -169,6 +169,23 @@ export default function FeedPage() {
     const isLiked = likedClipIds.includes(clip.id);
     setLikingId(clip.id);
 
+    // ⚡ Optimistic UI
+    if (!isLiked) {
+      setLikedClipIds((prev) => [...prev, clip.id]);
+      setClips((prev) =>
+        prev.map((c) =>
+          c.id === clip.id ? {...c, votes: c.votes + 1} : c
+        )
+      );
+    } else {
+      setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
+      setClips((prev) =>
+        prev.map((c) =>
+          c.id === clip.id ? {...c, votes: Math.max(c.votes - 1, 0)} : c
+        )
+      );
+    }
+
     if (!isLiked) {
       const {error: likeError} = await supabase.from("clip_likes").insert({
         clip_id: clip.id,
@@ -177,27 +194,44 @@ export default function FeedPage() {
 
       if (likeError) {
         console.error("Like insert error:", likeError.message);
+
+        // rollback
+        setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
+        setClips((prev) =>
+          prev.map((c) =>
+            c.id === clip.id ? {...c, votes: Math.max(c.votes - 1, 0)} : c
+          )
+        );
+
         setLikingId(null);
         return;
       }
 
-      const newVotes = clip.votes + 1;
-
       const {error: votesError} = await supabase
         .from("clips")
-        .update({votes: newVotes})
+        .update({votes: clip.votes + 1})
         .eq("id", clip.id);
 
       if (votesError) {
         console.error("Votes update error:", votesError.message);
+
+        // rollback
+        setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
+        setClips((prev) =>
+          prev.map((c) =>
+            c.id === clip.id ? {...c, votes: Math.max(c.votes - 1, 0)} : c
+          )
+        );
+
+        await supabase
+          .from("clip_likes")
+          .delete()
+          .eq("clip_id", clip.id)
+          .eq("user_id", userId);
+
         setLikingId(null);
         return;
       }
-
-      setLikedClipIds((prev) => [...prev, clip.id]);
-      setClips((prev) =>
-        prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
-      );
     } else {
       const {error: unlikeError} = await supabase
         .from("clip_likes")
@@ -207,6 +241,15 @@ export default function FeedPage() {
 
       if (unlikeError) {
         console.error("Like delete error:", unlikeError.message);
+
+        // rollback
+        setLikedClipIds((prev) => [...prev, clip.id]);
+        setClips((prev) =>
+          prev.map((c) =>
+            c.id === clip.id ? {...c, votes: c.votes + 1} : c
+          )
+        );
+
         setLikingId(null);
         return;
       }
@@ -220,14 +263,23 @@ export default function FeedPage() {
 
       if (votesError) {
         console.error("Votes update error:", votesError.message);
+
+        // rollback
+        setLikedClipIds((prev) => [...prev, clip.id]);
+        setClips((prev) =>
+          prev.map((c) =>
+            c.id === clip.id ? {...c, votes: c.votes + 1} : c
+          )
+        );
+
+        await supabase.from("clip_likes").insert({
+          clip_id: clip.id,
+          user_id: userId
+        });
+
         setLikingId(null);
         return;
       }
-
-      setLikedClipIds((prev) => prev.filter((id) => id !== clip.id));
-      setClips((prev) =>
-        prev.map((c) => (c.id === clip.id ? {...c, votes: newVotes} : c))
-      );
     }
 
     setLikingId(null);
@@ -244,7 +296,7 @@ export default function FeedPage() {
       }
 
       setShowHeart(clipId);
-      setTimeout(() => setShowHeart(null), 600);
+      setTimeout(() => setShowHeart(null), 450);
     }
 
     lastTapRef.current = now;
@@ -327,7 +379,7 @@ export default function FeedPage() {
                     <Heart
                       className={`h-9 w-9 transition duration-200 ${
                         isLiked
-                          ? "scale-110 fill-red-500 text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.55)]"
+                          ? "like-pulse scale-110 fill-red-500 text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.55)]"
                           : "text-white group-hover:scale-110"
                       }`}
                     />
@@ -379,7 +431,7 @@ export default function FeedPage() {
                 {showHeart === clip.id && (
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                     <div className="rounded-full bg-white/10 p-6 backdrop-blur-sm">
-                      <Heart className="h-24 w-24 animate-ping text-white drop-shadow-[0_0_28px_rgba(255,255,255,0.45)]" />
+                      <Heart className="like-pop h-24 w-24 text-white drop-shadow-[0_0_28px_rgba(255,255,255,0.45)]" />
                     </div>
                   </div>
                 )}
