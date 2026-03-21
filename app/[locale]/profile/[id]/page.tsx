@@ -5,6 +5,7 @@ import {useTranslations} from "next-intl";
 import {useParams} from "next/navigation";
 import {Link} from "../../../../i18n/navigation";
 import {supabase} from "../../../../lib/supabase";
+import FollowButton from "../../../components/follow-button";
 
 type Clip = {
   id: string;
@@ -23,6 +24,8 @@ export default function ProfilePage() {
 
   const [username, setUsername] = useState<string>("User");
   const [clips, setClips] = useState<Clip[]>([]);
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,6 +58,28 @@ export default function ProfilePage() {
         setUsername("User");
       }
 
+      const {count: followersCount, error: followersError} = await supabase
+        .from("follows")
+        .select("*", {count: "exact", head: true})
+        .eq("following_id", userId);
+
+      const {count: followingCount, error: followingError} = await supabase
+        .from("follows")
+        .select("*", {count: "exact", head: true})
+        .eq("follower_id", userId);
+
+      if (!mounted) return;
+
+      if (followersError) {
+        console.error("Followers count error:", followersError.message);
+      }
+
+      if (followingError) {
+        console.error("Following count error:", followingError.message);
+      }
+
+      setFollowers(followersCount || 0);
+      setFollowing(followingCount || 0);
       setLoading(false);
     };
 
@@ -87,8 +112,8 @@ export default function ProfilePage() {
           ← {t("backToFeed")}
         </Link>
 
-        <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 backdrop-blur-xl">
-          <p className="mb-3 inline-block rounded-full border border-zinc-700 bg-zinc-800 px-4 py-1 text-xs text-zinc-400">
+        <section className="rounded-3xl border border-white/10 bg-zinc-900/80 p-8 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+          <p className="mb-3 inline-block rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs text-zinc-400">
             {t("profile")}
           </p>
 
@@ -98,18 +123,31 @@ export default function ProfilePage() {
             </span>
           </h1>
 
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <FollowButton targetUserId={userId} />
+
+            <div className="flex gap-4 text-sm text-zinc-400">
+              <span>
+                <b className="text-white">{followers}</b> Followers
+              </span>
+              <span>
+                <b className="text-white">{following}</b> Following
+              </span>
+            </div>
+          </div>
+
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-2xl border border-zinc-800 bg-black/30 p-4">
+            <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
               <p className="text-sm text-zinc-400">{t("clips")}</p>
               <p className="mt-1 text-2xl font-bold">{clips.length}</p>
             </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-black/30 p-4">
+            <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
               <p className="text-sm text-zinc-400">{t("totalVotes")}</p>
               <p className="mt-1 text-2xl font-bold">{totalVotes}</p>
             </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-black/30 p-4">
+            <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
               <p className="text-sm text-zinc-400">{t("creator")}</p>
               <p className="mt-1 text-2xl font-bold">@{username}</p>
             </div>
@@ -117,7 +155,7 @@ export default function ProfilePage() {
         </section>
 
         {clips.length === 0 ? (
-          <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-10 text-center">
+          <section className="rounded-3xl border border-white/10 bg-zinc-900/80 p-10 text-center shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
             <p className="text-zinc-400">{t("empty")}</p>
 
             <Link
@@ -132,7 +170,7 @@ export default function ProfilePage() {
             {clips.map((clip) => (
               <article
                 key={clip.id}
-                className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/80 shadow-xl"
+                className="overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/80 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl"
               >
                 <div className="bg-black">
                   <video
@@ -155,7 +193,7 @@ export default function ProfilePage() {
                     </p>
                   </div>
 
-                  <div className="w-fit rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-300">
+                  <div className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-300 backdrop-blur-xl">
                     ❤️ {clip.votes} {t("votes")}
                   </div>
                 </div>
