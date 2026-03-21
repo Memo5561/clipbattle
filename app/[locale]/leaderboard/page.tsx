@@ -18,14 +18,10 @@ export default function LeaderboardPage() {
   const t = useTranslations("Leaderboard");
   const [clips, setClips] = useState<Clip[]>([]);
   const [loading, setLoading] = useState(true);
-  const [errorText, setErrorText] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
-
     const fetchLeaderboard = async () => {
       setLoading(true);
-      setErrorText(null);
 
       const {data, error} = await supabase
         .from("clips")
@@ -33,12 +29,9 @@ export default function LeaderboardPage() {
         .order("votes", {ascending: false})
         .limit(50);
 
-      if (!mounted) return;
-
       if (error) {
-        console.error("Fehler beim Laden des Leaderboards:", error.message);
+        console.error(error.message);
         setClips([]);
-        setErrorText(t("loadError"));
         setLoading(false);
         return;
       }
@@ -48,32 +41,25 @@ export default function LeaderboardPage() {
     };
 
     fetchLeaderboard();
+  }, []);
 
-    return () => {
-      mounted = false;
-    };
-  }, [t]);
+  const getRankStyle = (index: number) => {
+    if (index === 0)
+      return "bg-gradient-to-r from-yellow-500/20 to-yellow-300/10 border-yellow-400/20 shadow-[0_0_25px_rgba(250,204,21,0.25)]";
+    if (index === 1)
+      return "bg-gradient-to-r from-zinc-300/10 to-zinc-400/10 border-zinc-300/20";
+    if (index === 2)
+      return "bg-gradient-to-r from-amber-600/20 to-amber-400/10 border-amber-400/20";
+    return "bg-zinc-900/70 border-zinc-800";
+  };
 
   if (loading) {
     return (
       <ProtectedPage>
-        <div className="min-h-screen text-white">
-          <section className="mx-auto max-w-7xl rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 text-center backdrop-blur-xl">
-            <p className="text-zinc-400">{t("loading")}</p>
-          </section>
-        </div>
-      </ProtectedPage>
-    );
-  }
-
-  if (errorText) {
-    return (
-      <ProtectedPage>
-        <div className="min-h-screen text-white">
-          <section className="mx-auto max-w-7xl rounded-3xl border border-zinc-800 bg-zinc-900/80 p-10 text-center">
-            <h1 className="text-2xl font-bold text-white">{t("title")}</h1>
-            <p className="mt-3 text-zinc-400">{errorText}</p>
-          </section>
+        <div className="flex min-h-screen items-center justify-center text-white">
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 backdrop-blur-md">
+            {t("loading")}
+          </div>
         </div>
       </ProtectedPage>
     );
@@ -81,14 +67,18 @@ export default function LeaderboardPage() {
 
   return (
     <ProtectedPage>
-      <div className="min-h-screen text-white">
-        <div className="mx-auto max-w-7xl space-y-8">
-          <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 backdrop-blur-xl">
-            <p className="mb-3 inline-block rounded-full border border-zinc-700 bg-zinc-800 px-4 py-1 text-xs text-zinc-400">
+      <div className="min-h-screen px-4 py-10 text-white">
+        <div className="mx-auto max-w-6xl space-y-8">
+          
+          {/* HEADER */}
+          <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/70 p-8 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.25),transparent_30%)]" />
+
+            <p className="mb-3 inline-block rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs text-zinc-300">
               {t("badge")}
             </p>
 
-            <h1 className="text-3xl font-bold md:text-4xl">
+            <h1 className="text-3xl font-black md:text-4xl">
               {t("title")}
             </h1>
 
@@ -97,72 +87,53 @@ export default function LeaderboardPage() {
             </p>
           </section>
 
-          {clips.length === 0 ? (
-            <section className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-10 text-center">
-              <p className="text-zinc-400">{t("empty")}</p>
-            </section>
-          ) : (
-            <section className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/80">
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left">
-                  <thead className="border-b border-zinc-800 bg-zinc-950/80 text-sm text-zinc-400">
-                    <tr>
-                      <th className="px-6 py-4">{t("rank")}</th>
-                      <th className="px-6 py-4">{t("clip")}</th>
-                      <th className="px-6 py-4">{t("game")}</th>
-                      <th className="px-6 py-4">{t("creator")}</th>
-                      <th className="px-6 py-4">{t("votes")}</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {clips.map((clip, index) => (
-                      <tr
-                        key={clip.id}
-                        className="border-b border-zinc-800/80 transition hover:bg-white/5"
-                      >
-                        <td className="px-6 py-4 font-bold text-white">
-                          #{index + 1}
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-4">
-                            <div className="h-14 w-24 overflow-hidden rounded-xl border border-zinc-800 bg-black">
-                              <video
-                                src={clip.video_url}
-                                muted
-                                playsInline
-                                preload="metadata"
-                                className="h-full w-full object-cover"
-                              />
-                            </div>
-
-                            <div>
-                              <p className="font-semibold text-white">
-                                {clip.title}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-4 text-zinc-300">
-                          {clip.game || t("unknownGame")}
-                        </td>
-
-                        <td className="px-6 py-4 text-zinc-300">
-                          {clip.username || t("unknownUser")}
-                        </td>
-
-                        <td className="px-6 py-4 font-medium text-zinc-200">
-                          ❤️ {clip.votes}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          {/* LIST */}
+          {clips.map((clip, index) => (
+            <div
+              key={clip.id}
+              className={`flex flex-col gap-4 rounded-3xl border p-4 backdrop-blur-xl transition hover:scale-[1.01] sm:flex-row sm:items-center ${getRankStyle(index)}`}
+            >
+              
+              {/* RANK */}
+              <div className="flex items-center justify-center text-2xl font-black w-14">
+                #{index + 1}
               </div>
-            </section>
-          )}
+
+              {/* VIDEO */}
+              <div className="w-full max-w-[200px] overflow-hidden rounded-2xl border border-white/10">
+                <video
+                  src={clip.video_url}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="aspect-video w-full object-cover"
+                />
+              </div>
+
+              {/* INFO */}
+              <div className="flex-1">
+                <h2 className="text-lg font-bold text-white">
+                  {clip.title}
+                </h2>
+
+                <p className="text-sm text-zinc-400">
+                  🎮 {clip.game || t("unknownGame")}
+                </p>
+
+                <p className="text-sm text-zinc-500">
+                  @{clip.username || t("unknownUser")}
+                </p>
+              </div>
+
+              {/* VOTES */}
+              <div className="text-right">
+                <div className="rounded-full border border-white/10 bg-black/40 px-4 py-2 text-sm font-bold text-white backdrop-blur-xl">
+                  ❤️ {clip.votes}
+                </div>
+              </div>
+            </div>
+          ))}
+
         </div>
       </div>
     </ProtectedPage>
