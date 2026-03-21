@@ -29,8 +29,8 @@ function DesktopNavLink({
       href={href}
       className={`rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
         active
-          ? "border-white/20 bg-white/10 text-white"
-          : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:scale-105 hover:border-white/20 hover:bg-white/10 hover:text-white"
+          ? "border-white/20 bg-white/10 text-white shadow-lg"
+          : "border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:scale-[1.03] hover:border-white/20 hover:bg-white/10 hover:text-white hover:shadow-lg"
       }`}
     >
       {label}
@@ -55,7 +55,7 @@ function MobileNavItem({
       href={href}
       className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition ${
         active
-          ? "bg-white/10 text-white"
+          ? "bg-white/10 text-white shadow-lg"
           : "text-zinc-400 hover:bg-white/5 hover:text-white"
       }`}
     >
@@ -182,10 +182,10 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-zinc-900/80 bg-black/60 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-2xl shadow-[0_8px_30px_rgba(0,0,0,0.45)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <Link href="/" className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 text-base font-bold shadow-lg sm:h-11 sm:w-11 sm:text-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 via-fuchsia-500 to-blue-500 text-base font-bold text-white shadow-[0_0_25px_rgba(139,92,246,0.5)] ring-1 ring-white/10 sm:h-11 sm:w-11 sm:text-lg">
               CB
             </div>
 
@@ -211,13 +211,16 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMenuOpenDesktop((prev) => !prev)}
-                  className="rounded-xl border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-500/20"
+                  className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white backdrop-blur-xl shadow-lg transition hover:scale-[1.03] hover:bg-white/10"
                 >
-                  👤 {displayName}
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-fuchsia-500 to-blue-500 text-xs font-bold text-white">
+                    {displayName?.[0]?.toUpperCase()}
+                  </div>
+                  {displayName}
                 </button>
 
                 {menuOpenDesktop && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-zinc-800 bg-zinc-950 p-3 shadow-2xl">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/10 bg-black/80 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
                     <div className="rounded-xl px-3 py-2">
                       <p className="text-sm font-semibold text-white">
                         @{displayName}
@@ -227,7 +230,7 @@ export default function Navbar() {
                     <div className="my-2 border-t border-zinc-800" />
 
                     <div className="px-3 pb-2">
-                      <p className="text-xs uppercase tracking-wide text-zinc-500">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">
                         Mein Account
                       </p>
                     </div>
@@ -273,13 +276,13 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMenuOpenMobile((prev) => !prev)}
-                  className="flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10 text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white shadow-lg backdrop-blur-xl transition hover:bg-white/10"
                 >
                   <User size={18} />
                 </button>
 
                 {menuOpenMobile && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-zinc-800 bg-zinc-950 p-3 shadow-2xl">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/10 bg-black/80 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
                     <div className="rounded-xl px-3 py-2">
                       <p className="text-sm font-semibold text-white">
                         {mobileLabel}
@@ -289,7 +292,7 @@ export default function Navbar() {
                     <div className="my-2 border-t border-zinc-800" />
 
                     <div className="px-3 pb-2">
-                      <p className="text-xs uppercase tracking-wide text-zinc-500">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">
                         Mein Account
                       </p>
                     </div>
@@ -325,7 +328,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/auth"
-                className="rounded-2xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-300"
+                className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-zinc-300 shadow-lg backdrop-blur-xl"
               >
                 {t("login")}
               </Link>
@@ -334,8 +337,8 @@ export default function Navbar() {
         </div>
       </header>
 
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-800 bg-black/90 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl md:hidden">
-        <div className="mx-auto flex max-w-md items-center gap-1 rounded-3xl border border-zinc-800 bg-zinc-900/80 p-1.5 shadow-2xl">
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-black/85 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-2xl md:hidden">
+        <div className="mx-auto flex max-w-md items-center gap-1 rounded-3xl border border-white/10 bg-zinc-900/75 p-1.5 shadow-[0_18px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <MobileNavItem href="/" label={t("home")} icon={<House size={18} />} />
           <MobileNavItem href="/upload" label={t("upload")} icon={<Upload size={18} />} />
           <MobileNavItem href="/feed" label={t("feed")} icon={<Clapperboard size={18} />} />
