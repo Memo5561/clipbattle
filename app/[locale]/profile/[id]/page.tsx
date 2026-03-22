@@ -16,6 +16,7 @@ type Clip = {
   votes: number;
   username: string | null;
   user_id: string;
+  created_at?: string;
 };
 
 export default function ProfilePage() {
@@ -121,9 +122,12 @@ export default function ProfilePage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.24),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.18),transparent_26%)]" />
 
           <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-fuchsia-500 to-blue-500 text-2xl font-black text-white shadow-[0_0_28px_rgba(139,92,246,0.4)] ring-2 ring-white/10 sm:h-20 sm:w-20 sm:text-3xl">
-                {initial}
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-purple-500/40 blur-2xl" />
+                <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-fuchsia-500 to-blue-500 text-2xl font-black text-white ring-2 ring-white/10 sm:h-20 sm:w-20 sm:text-3xl">
+                  {initial}
+                </div>
               </div>
 
               <div>
@@ -141,16 +145,19 @@ export default function ProfilePage() {
                   ClipBattle Creator
                 </p>
 
-                <div className="mt-4 flex flex-wrap items-center gap-4">
+                <div className="mt-5 flex flex-wrap items-center gap-5">
                   <FollowButton targetUserId={userId} />
 
-                  <div className="flex flex-wrap gap-4 text-sm text-zinc-400">
-                    <span>
-                      <b className="text-white">{followers}</b> Followers
-                    </span>
-                    <span>
-                      <b className="text-white">{following}</b> Following
-                    </span>
+                  <div className="flex gap-6">
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-white">{followers}</p>
+                      <p className="text-xs text-zinc-400">Followers</p>
+                    </div>
+
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-white">{following}</p>
+                      <p className="text-xs text-zinc-400">Following</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -171,7 +178,6 @@ export default function ProfilePage() {
                 icon={<Users size={18} />}
                 label={t("creator")}
                 value={`@${username}`}
-                smallValue
               />
             </div>
           </div>
@@ -239,25 +245,21 @@ export default function ProfilePage() {
 function StatCard({
   icon,
   label,
-  value,
-  smallValue = false
+  value
 }: {
   icon: React.ReactNode;
   label: string;
   value: number | string;
-  smallValue?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-4 text-center shadow-lg backdrop-blur-xl">
-      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/6 text-zinc-300 ring-1 ring-white/10">
+    <div className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-black/30 px-3 py-4 text-center backdrop-blur-xl">
+      <div className="mb-2 text-zinc-300">
         {icon}
       </div>
-      <p className="text-xs text-zinc-400">{label}</p>
-      <p
-        className={`mt-1 font-black text-white ${
-          smallValue ? "text-sm sm:text-base" : "text-2xl"
-        }`}
-      >
+
+      <p className="text-[11px] text-zinc-400">{label}</p>
+
+      <p className="mt-1 max-w-full break-words text-lg font-bold text-white">
         {value}
       </p>
     </div>
