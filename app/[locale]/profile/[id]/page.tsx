@@ -6,7 +6,7 @@ import {useParams} from "next/navigation";
 import {Link} from "../../../../i18n/navigation";
 import {supabase} from "../../../../lib/supabase";
 import FollowButton from "../../../components/follow-button";
-import {Clapperboard, Heart, Users} from "lucide-react";
+import {Clapperboard, Heart} from "lucide-react";
 
 type Clip = {
   id: string;
@@ -142,8 +142,6 @@ export default function ProfilePage() {
                 </h1>
 
                 <p className="mt-1 text-sm text-zinc-400">
-  @{username}
-</p>
                   ClipBattle Creator
                 </p>
 
@@ -250,19 +248,15 @@ function StatCard({
 }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-black/30 px-4 py-4 text-center backdrop-blur-xl">
-
       <div className="mb-2 text-zinc-300">
         {icon}
       </div>
 
-      <p className="text-xs text-zinc-400">
-        {label}
-      </p>
+      <p className="text-xs text-zinc-400">{label}</p>
 
       <p className="mt-1 text-xl font-bold text-white">
         {value}
       </p>
-
     </div>
   );
 }
