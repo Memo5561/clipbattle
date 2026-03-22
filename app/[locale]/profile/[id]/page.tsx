@@ -142,6 +142,8 @@ export default function ProfilePage() {
                 </h1>
 
                 <p className="mt-1 text-sm text-zinc-400">
+  @{username}
+</p>
                   ClipBattle Creator
                 </p>
 
@@ -163,7 +165,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
               <StatCard
                 icon={<Clapperboard size={18} />}
                 label={t("clips")}
@@ -173,11 +175,6 @@ export default function ProfilePage() {
                 icon={<Heart size={18} />}
                 label={t("totalVotes")}
                 value={totalVotes}
-              />
-              <StatCard
-                icon={<Users size={18} />}
-                label={t("creator")}
-                value={`@${username}`}
               />
             </div>
           </div>
@@ -252,16 +249,20 @@ function StatCard({
   value: number | string;
 }) {
   return (
-    <div className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-black/30 px-3 py-4 text-center backdrop-blur-xl">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-black/30 px-4 py-4 text-center backdrop-blur-xl">
+
       <div className="mb-2 text-zinc-300">
         {icon}
       </div>
 
-      <p className="text-[11px] text-zinc-400">{label}</p>
+      <p className="text-xs text-zinc-400">
+        {label}
+      </p>
 
-      <p className="mt-1 max-w-full break-words text-lg font-bold text-white">
+      <p className="mt-1 text-xl font-bold text-white">
         {value}
       </p>
+
     </div>
   );
 }
