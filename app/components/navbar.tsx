@@ -184,6 +184,13 @@ export default function Navbar() {
   };
 
   const handleGoToAccount = () => {
+    setMenuOpenDesktop(false);
+    setMenuOpenMobile(false);
+    router.push("/account");
+    router.refresh();
+  };
+
+  const handleGoToMyProfile = () => {
     if (!userId) return;
 
     setMenuOpenDesktop(false);
@@ -271,6 +278,14 @@ export default function Navbar() {
 
                     <button
                       type="button"
+                      onClick={handleGoToMyProfile}
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                    >
+                      Mein Profil
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={handleGoToMyClips}
                       className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
@@ -329,6 +344,14 @@ export default function Navbar() {
                       className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
                     >
                       {t("accountInfo")}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleGoToMyProfile}
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                    >
+                      Mein Profil
                     </button>
 
                     <button
