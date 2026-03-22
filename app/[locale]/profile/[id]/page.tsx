@@ -6,6 +6,7 @@ import {useParams} from "next/navigation";
 import {Link} from "../../../../i18n/navigation";
 import {supabase} from "../../../../lib/supabase";
 import FollowButton from "../../../components/follow-button";
+import {Clapperboard, Heart, Users} from "lucide-react";
 
 type Clip = {
   id: string;
@@ -35,7 +36,7 @@ export default function ProfilePage() {
       setLoading(true);
 
       const {data, error} = await supabase
-        .from("clips")
+        .from("clips_with_likes")
         .select("*")
         .eq("user_id", userId)
         .order("created_at", {ascending: false});
@@ -94,73 +95,95 @@ export default function ProfilePage() {
     return clips.reduce((sum, clip) => sum + (clip.votes || 0), 0);
   }, [clips]);
 
+  const initial = (username?.[0] || "U").toUpperCase();
+
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-white">
-        {t("loading")}
+      <div className="flex min-h-screen items-center justify-center bg-black text-white">
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium backdrop-blur-md">
+          {t("loading")}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen px-4 py-10 text-white">
+    <div className="min-h-screen bg-black px-4 py-8 text-white sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl space-y-8">
         <Link
           href="/feed"
-          className="inline-block text-sm text-zinc-400 transition hover:text-white"
+          className="inline-flex items-center text-sm text-zinc-400 transition hover:text-white"
         >
           ← {t("backToFeed")}
         </Link>
 
-        <section className="rounded-3xl border border-white/10 bg-zinc-900/80 p-8 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
-          <p className="mb-3 inline-block rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs text-zinc-400">
-            {t("profile")}
-          </p>
+        <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-900/75 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-2xl sm:p-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.24),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.18),transparent_26%)]" />
 
-          <h1 className="text-3xl font-bold md:text-4xl">
-            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              @{username}
-            </span>
-          </h1>
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-fuchsia-500 to-blue-500 text-2xl font-black text-white shadow-[0_0_28px_rgba(139,92,246,0.4)] ring-2 ring-white/10 sm:h-20 sm:w-20 sm:text-3xl">
+                {initial}
+              </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-4">
-            <FollowButton targetUserId={userId} />
+              <div>
+                <p className="mb-2 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-zinc-300">
+                  {t("profile")}
+                </p>
 
-            <div className="flex gap-4 text-sm text-zinc-400">
-              <span>
-                <b className="text-white">{followers}</b> Followers
-              </span>
-              <span>
-                <b className="text-white">{following}</b> Following
-              </span>
+                <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
+                  <span className="bg-gradient-to-r from-purple-300 via-fuchsia-300 to-blue-300 bg-clip-text text-transparent">
+                    @{username}
+                  </span>
+                </h1>
+
+                <p className="mt-1 text-sm text-zinc-400">
+                  ClipBattle Creator
+                </p>
+
+                <div className="mt-4 flex flex-wrap items-center gap-4">
+                  <FollowButton targetUserId={userId} />
+
+                  <div className="flex flex-wrap gap-4 text-sm text-zinc-400">
+                    <span>
+                      <b className="text-white">{followers}</b> Followers
+                    </span>
+                    <span>
+                      <b className="text-white">{following}</b> Following
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-              <p className="text-sm text-zinc-400">{t("clips")}</p>
-              <p className="mt-1 text-2xl font-bold">{clips.length}</p>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-              <p className="text-sm text-zinc-400">{t("totalVotes")}</p>
-              <p className="mt-1 text-2xl font-bold">{totalVotes}</p>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-              <p className="text-sm text-zinc-400">{t("creator")}</p>
-              <p className="mt-1 text-2xl font-bold">@{username}</p>
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+              <StatCard
+                icon={<Clapperboard size={18} />}
+                label={t("clips")}
+                value={clips.length}
+              />
+              <StatCard
+                icon={<Heart size={18} />}
+                label={t("totalVotes")}
+                value={totalVotes}
+              />
+              <StatCard
+                icon={<Users size={18} />}
+                label={t("creator")}
+                value={`@${username}`}
+                smallValue
+              />
             </div>
           </div>
         </section>
 
         {clips.length === 0 ? (
-          <section className="rounded-3xl border border-white/10 bg-zinc-900/80 p-10 text-center shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+          <section className="rounded-[2rem] border border-white/10 bg-zinc-900/75 p-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
             <p className="text-zinc-400">{t("empty")}</p>
 
             <Link
               href="/feed"
-              className="mt-4 inline-block rounded-2xl border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm text-white transition hover:bg-zinc-700"
+              className="mt-4 inline-block rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
             >
               {t("backToFeed")}
             </Link>
@@ -170,9 +193,9 @@ export default function ProfilePage() {
             {clips.map((clip) => (
               <article
                 key={clip.id}
-                className="overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/80 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl"
+                className="group overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-900/75 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl transition hover:-translate-y-1"
               >
-                <div className="bg-black">
+                <div className="relative bg-black">
                   <video
                     src={clip.video_url}
                     controls
@@ -180,6 +203,7 @@ export default function ProfilePage() {
                     preload="metadata"
                     className="aspect-video w-full object-cover"
                   />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 to-transparent opacity-0 transition group-hover:opacity-100" />
                 </div>
 
                 <div className="space-y-3 p-5">
@@ -193,8 +217,14 @@ export default function ProfilePage() {
                     </p>
                   </div>
 
-                  <div className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-300 backdrop-blur-xl">
-                    ❤️ {clip.votes} {t("votes")}
+                  <div className="flex items-center justify-between">
+                    <div className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-300 backdrop-blur-xl">
+                      ❤️ {clip.votes} {t("votes")}
+                    </div>
+
+                    <span className="text-xs text-zinc-500">
+                      @{clip.username || "User"}
+                    </span>
                   </div>
                 </div>
               </article>
@@ -202,6 +232,34 @@ export default function ProfilePage() {
           </section>
         )}
       </div>
+    </div>
+  );
+}
+
+function StatCard({
+  icon,
+  label,
+  value,
+  smallValue = false
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number | string;
+  smallValue?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/25 p-4 text-center shadow-lg backdrop-blur-xl">
+      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/6 text-zinc-300 ring-1 ring-white/10">
+        {icon}
+      </div>
+      <p className="text-xs text-zinc-400">{label}</p>
+      <p
+        className={`mt-1 font-black text-white ${
+          smallValue ? "text-sm sm:text-base" : "text-2xl"
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }
